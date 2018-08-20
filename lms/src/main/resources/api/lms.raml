@@ -1,0 +1,65 @@
+#%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/96579eb2-1dbd-441d-9251-73c378cedb1c # 
+title: LMS
+version: 1.0
+
+traits:
+    responseMessage:
+      usage: This is used to define respsne
+      description: It sends json response
+      responses: 
+        200:
+          body: 
+            application/json:
+              example:  |
+                {"message": "Record saved in database successfuly."}            
+/book:
+  displayName: Book
+  get:
+    description: This method will fetch collection of books.
+    responses: 
+      200:
+        body: 
+          application/json:
+            example: !include Example_json/books.json
+  post:
+    body: 
+      application/json:
+        example:
+          {"Title":"Look Upward", "Author":"Anderson", "Publication Year": "2001", "Price": 1250}   
+    is: [responseMessage]
+  /{title}:
+    uriParameters:
+      title: string
+    get:
+      responses: 
+        200:
+          body: 
+            application/json:
+              example: 
+                {"Title":"Look Upward", "Author":"Anderson", "Publication Year": "2001", "Price": 1250}
+  /author:
+    get:
+      responses: 
+        200:
+          body: 
+            application/json:
+              example:
+                [{"Name":"Mike", "numberOfBooks": 4}, {"Name":"Carl", "numberOfBooks": 2}]
+    post:
+      body: 
+        application/json:
+          example:
+            {"Name":"Mike", "numberOfBooks": 4}
+      is: [responseMessage]
+    
+        
+      
+      
+
+            
+
+
+      
+
+              

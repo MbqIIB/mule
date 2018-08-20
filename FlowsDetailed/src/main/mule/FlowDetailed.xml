@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="41a95a3b-bc14-4ea4-85ab-a4a8d9efceb2" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="6d4ee1a4-ff2e-4d99-b3c2-fccae5a6559f">
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="30b783cf-9e9a-4c70-89b0-56fbd3c42495" >
+		<vm:queues >
+			<vm:queue queueName="VMQueue1" />
+		</vm:queues>
+	</vm:config>
+	<flow name="MainFlow" doc:id="e41431ba-ffc4-4c46-9df6-a80daf6626bd" >
+		<http:listener doc:name="HTTPListener" doc:id="6a99e89b-a7fe-4131-84b4-2d783a5d72a9" config-ref="HTTP_Listener_config" path="/FlowDetailed" allowedMethods="GET"/>
+		<set-payload value="#['VE flow executed.']" doc:name="Set Payload" doc:id="ed9a8554-6b2b-4906-a4c3-bd138f0aadec" />
+		<logger level="INFO" doc:name="Logger" doc:id="93f1f67c-72fa-4b40-b0ce-733dbc137e14" message="Logged from main flow."/>
+		<flow-ref doc:name="Flow Reference" doc:id="154f68ab-53ba-46fd-b8bf-aab2e7b36608" name="Sub_Flow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="14ccb8de-8f77-4e25-9f04-63c8663f6c2e" message="Going to call Private Flow usng HTTP."/>
+		<http:request method="GET" doc:name="Request" doc:id="9e181c7d-c889-413f-8d9a-5f94ff23f59e" config-ref="HTTP_Request_configuration" path="/PrivateFlow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ce0c4ad7-fb7e-4301-88b7-66cbbcbf7de7" message="#['Going to call VM flow']"/>
+		<vm:publish-consume doc:name="Publish consume" doc:id="6772c5a0-f4cb-4a57-8490-f54a486d3ef1" config-ref="VM_Config" queueName="VMQueue1"/>
+		<logger level="INFO" doc:name="Logger" doc:id="24fa6a52-6fcf-4113-adee-904c520fe79f" message="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4a6df2da-5b24-41ca-8273-8da78b18b374" message="Good Bye!"/>
+	</flow>
+	<sub-flow name="Sub_Flow" doc:id="ce7165a4-afbf-40f9-b3f2-90a149ad19dd" >
+		<set-payload value="#['Sub Flow has been executed']" doc:name="Set Payload" doc:id="6b080071-b829-4a62-a0bc-0ba466e79f01" />
+		<logger level="INFO" doc:name="Logger" doc:id="a6477e43-3f42-4748-9374-8fd355506275" message="Logged from  Sub Flow"/>
+	</sub-flow>
+	<flow name="VMFlow" doc:id="38cf8b37-ad43-408e-968d-aa576ec97422" >
+		<vm:listener queueName="VMQueue1" doc:name="Listener" doc:id="0351cc96-bfb1-47aa-84d0-bea9838c0449" config-ref="VM_Config">
+			<vm:response >
+				<vm:content ><![CDATA[#['Response from VM flow']]]></vm:content>
+			</vm:response>
+		</vm:listener>
+		<set-payload value="#['VM flow has been executed.']" doc:name="Set Payload" doc:id="d3eeb3e9-a348-4075-994d-814a4d096e95" />
+		<logger level="INFO" doc:name="Logger" doc:id="513c2ac1-704c-4e9f-8c54-20d990d7a460" message="This is VM flow logger."/>
+	</flow>
+	<flow name="PrivateFlow" doc:id="36af368e-49c3-46ae-9f2b-0e5105fe1332" >
+		<http:listener doc:name="Listener" doc:id="182cb1ff-eaee-43f4-ad0c-6e89ca6f54da" config-ref="HTTP_Listener_config" path="/PrivateFlow"/>
+		<set-payload value="#['Private flow has been executed on HTTP']" doc:name="Set Payload" doc:id="1b4f14c2-c3a5-4898-84c1-176f38ea5fbd" />
+		<logger level="INFO" doc:name="Logger" doc:id="1a651349-de0d-4aed-8337-f20383c6ad2a" message="Logged from private flow"/>
+	</flow>
+</mule>

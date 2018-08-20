@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="json" format="json">
+      <types:example format="json" location="api/Example_json/books.json"/>
+    </types:type>
+    <types:type name="books_out_json" format="json">
+      <types:example format="json" location="api/Example_json/books.json"/>
+    </types:type>
+    <types:type name="book_out_json" format="json">
+      <types:example format="json" location="api/Example_json/books.json"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#7079fd19-3e20-4430-ad2c-987c22ff58fe">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="book_out_json"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

@@ -1,0 +1,9 @@
+%dw 2.0
+output application/java
+---
+[{
+	title: "????",
+	author: "????",
+	pub_year: "????",
+	price: 2
+}]

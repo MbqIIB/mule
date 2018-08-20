@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="MainFlow" doc:id="4fa27ab3-a065-4685-82a5-6f5d086a77e8" >
+		<scheduler doc:name="Scheduler" doc:id="9c999d6c-52a1-4a41-a86f-c6a9a4f451fd" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="10000"/>
+			</scheduling-strategy>
+		</scheduler>
+		<logger level="INFO" doc:name="Logger" doc:id="460bb5c4-2ca9-4f5e-804f-fdc0622bb660" message="Main Flow started."/>
+		<flow-ref doc:name="Flow Reference" doc:id="c6ff582f-8996-4e19-8504-e80244dc72de" name="PrivateFlow"/>
+	</flow>
+	<sub-flow name="SubFlow" doc:id="3afa0176-cafa-4ae3-b159-b5414d9b3408" >
+		<logger level="INFO" doc:name="Logger" doc:id="5a213749-3dc1-4ef4-b81a-0d67a6427c3d" message="This is subflow."/>
+	</sub-flow>
+	<flow name="PrivateFlow" doc:id="301be2aa-6f1e-4871-86d5-49f75d226049" >
+		<logger level="INFO" doc:name="Logger" doc:id="6aaa7018-cd8e-4a3c-8f9c-cb6bdc1bb4fa" message="This is private flow."/>
+	</flow>
+</mule>
