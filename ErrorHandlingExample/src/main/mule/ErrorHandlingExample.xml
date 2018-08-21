@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a52cbcb8-813e-4edf-be2c-31d982f1cf02" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<http:request-config name="Weather_Request_configuration" doc:name="HTTP Request configuration" doc:id="7a5491ba-2336-479a-b0f4-8fbacf7d4db7">
+		<http:request-connection host="api.openweathermap.org" />
+	</http:request-config>
+	<flow name="MainFlow" doc:id="02eb85ed-7c4f-4a2e-8861-97b2a1cfb27f" >
+		<http:listener doc:name="Listener" doc:id="0a16e81e-280b-4ad4-a4ea-a8dbe619f4c7" config-ref="HTTP_Listener_config" path="/EHFlow" allowedMethods="GET"/>
+		<set-variable value="#[attributes.queryParams.city_country]" doc:name="Set Variable" doc:id="f7f1da23-50d7-4447-a494-a7f047858196" variableName="cityCountry"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ab8071c8-2382-49c3-9487-fb2c935e7680" message="cityCountry = #[vars.cityCountry]"/>
+		<try doc:name="Try" doc:id="fba70ae4-eb41-48f3-8edd-c25f992a7335" >
+			<http:request method="GET" doc:name="WeatherRequest" doc:id="4a1ae95c-2810-4296-99ad-993137af5eef" config-ref="Weather_Request_configuration" path="/data/2.5/weather">
+			<http:query-params><![CDATA[#[output applicaton/java
+---
+{
+	"q" : "London,uk",
+	"apikey" : "fa46ab177dc6d8efa080bfe8793ecad0"
+}]]]></http:query-params>
+		</http:request>
+			<ee:transform doc:name="Transform Message" doc:id="2c2775c1-bdba-4585-a2bb-1094c95f96cf" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	successmesage: "Weather Request is working fine."
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3b72e777-4fe6-4b8f-827f-f4416d81f8c2" type="HTTP:NOT_FOUND">
+					<logger level="INFO" doc:name="Not Found Error Logger" doc:id="5ebcdc9e-7803-4e8e-8a7f-57e1ac71fc62" message="Encounter Not Found error in weather request. Error: #[error.description] #['\n']"/>
+					<set-payload value="#['Resourse Not found.']" doc:name="Set Payload" doc:id="15bd50e1-a68f-4c3a-971a-c6fc258b36eb" />
+				
+</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e431a29c-3fd8-4df3-88af-9a91ad605b26" type="HTTP:UNAUTHORIZED">
+					<logger level="INFO" doc:name="Unathorized Error Logger" doc:id="d127b239-13d0-42ee-9ed6-baf2e1dcc45d" message="Encounter Unauthorized error in weather request. Error: #[error.description] #['\n'] Payload: #[payload]" />
+					<set-payload value="#['Resourse is not authorized.']" doc:name="Set Payload" doc:id="f7439576-5e3e-4d07-a45e-c1742a5cfee5" />
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="cc343bac-c665-425a-b6bb-f4a9f4a15ee7" type="HTTP:PARSING">
+					<logger level="INFO" doc:name="Parsing Error Logger" doc:id="796449a9-7547-459b-8f89-7edc287e5657" message="Encounter Parsing error in weather request. Error: #[error.description] #['\n'] Payload: #[payload]" />
+					<set-payload value="#['Parsing Error.']" doc:name="Set Payload" doc:id="c3dd9862-68ab-4856-aa84-4ecda5a1c2dd" />
+				</on-error-propagate>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e371e869-5d11-4310-94ef-55d408b01b47" type="EXPRESSION">
+					<set-payload value="#['Encounter error in weather request. Error:' ++ error.description]" doc:name="Set Payload" doc:id="26b3a6d8-bb80-43f0-83a2-e193baa99b86" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="Logger" doc:id="29e0da06-e4ce-428e-861d-2f718487bb49" message="Today weather is: #[payload]"/>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ea4c402f-50f0-4ef2-9680-75943b8fd9a0" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="21ae4c5d-b1b1-4a84-84aa-8d66320ee119" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Exception:"Weather request was not successful.",
+	Reason: payload
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
