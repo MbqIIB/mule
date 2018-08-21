@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d6cd1bec-a758-4c4f-816f-1e85027e62c1" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="VariablesExampleFlow" doc:id="7078356a-343d-452d-b3cf-0330130681e6" >
+		<http:listener doc:name="HTTPListener" doc:id="6b08b0b0-3f93-4c2e-a1c9-425c0b312aad" config-ref="HTTP_Listener_config" path="/VE" allowedMethods="POST"/>
+		<set-variable value="#[attributes.queryParams.id1]" doc:name="Set Variable Id1" doc:id="5e99ac28-1410-454d-804c-f6879daad5ed" variableName="id1"/>
+		<set-variable value="#['\'%' ++ attributes.queryParams.id1 ++ '%\'']" doc:name="Set Variable Id2" doc:id="b51e4756-89e5-4e4d-8c9a-06e8f50234d5" variableName="id2" />
+		<set-payload value="#['Flow variable is:'  ++ vars.id1 ++ ' Query Parameter is ' ++ attributes.queryParams.id1]" doc:name="Set Payload" doc:id="a7115701-d619-4c1c-a25c-dc44e896e44f" />
+		<logger level="INFO" doc:name="Logger" doc:id="7769d9ea-01b9-4a8d-b357-d7de9ccaea05" message="Flow Variable is1 is: #[vars.id1] and query parameter is: #[attributes.queryParams.id1] "/>
+		<logger level="INFO" doc:name="Logger2" doc:id="a0ab3042-243a-4066-b5ad-191937431699" message="Flow Variable id2 is is: #[vars.id2] and query parameter is: #[attributes.queryParams.id1] " />
+		<flow-ref doc:name="Flow Reference" doc:id="4c463600-b219-4470-a59e-ac05bef94c0e" name="Sub_Flow"/>
+		<flow-ref doc:name="Private Flow Reference" doc:id="e8d3514f-4d18-4502-a3df-64391178095d" name="PrivateFlow1" />
+	</flow>
+	<sub-flow name="Sub_Flow" doc:id="fa69852d-a3a2-4f27-aac5-29793b93eb08" >
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="b2ca0ab6-ff67-4596-ac0b-8f16cea3aaa2" />
+		<logger level="INFO" doc:name="Logger" doc:id="d3d693b7-a712-4c9c-a9d0-5487c209c3c7" message="Payload in subflow is #[payload] and variable id2 is  #[vars.id2]"/>
+	</sub-flow>
+	<flow name="PrivateFlow1" doc:id="fff4f79d-5dd6-4ec0-a3ff-ca6a72d02c49" >
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="a8869f48-a643-4263-b78b-53119c677acd" />
+		<logger level="INFO" doc:name="Logger" doc:id="b74e19f0-dad7-42ab-8861-a597ede922de" message="Payload in subflow is #[payload] and variable id2 is  #[vars.id2]"/>
+	</flow>
+</mule>
