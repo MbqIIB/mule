@@ -37,12 +37,12 @@ output application/json
 			</ee:transform>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3b72e777-4fe6-4b8f-827f-f4416d81f8c2" type="HTTP:NOT_FOUND">
-					<logger level="INFO" doc:name="Not Found Error Logger" doc:id="5ebcdc9e-7803-4e8e-8a7f-57e1ac71fc62" message="Encounter Not Found error in weather request. Error: #[error.description] #['\n']"/>
+					<logger level="INFO" doc:name="Not Found Error Logger" doc:id="5ebcdc9e-7803-4e8e-8a7f-57e1ac71fc62" message="Encounter Not Found error in weather request. Error: #[error.description] #['\n']. To test this add 1 at the end of api url."/>
 					<set-payload value="#['Resourse Not found.']" doc:name="Set Payload" doc:id="15bd50e1-a68f-4c3a-971a-c6fc258b36eb" />
 				
 </on-error-propagate>
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e431a29c-3fd8-4df3-88af-9a91ad605b26" type="HTTP:UNAUTHORIZED">
-					<logger level="INFO" doc:name="Unathorized Error Logger" doc:id="d127b239-13d0-42ee-9ed6-baf2e1dcc45d" message="Encounter Unauthorized error in weather request. Error: #[error.description] #['\n'] Payload: #[payload]" />
+					<logger level="INFO" doc:name="Unathorized Error Logger" doc:id="d127b239-13d0-42ee-9ed6-baf2e1dcc45d" message="Encounter Unauthorized error in weather request. Error: #[error.description] #['\n']. To test this senario change query parameter to apikey1" />
 					<set-payload value="#['Resourse is not authorized.']" doc:name="Set Payload" doc:id="f7439576-5e3e-4d07-a45e-c1742a5cfee5" />
 				</on-error-propagate>
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="cc343bac-c665-425a-b6bb-f4a9f4a15ee7" type="HTTP:PARSING">
