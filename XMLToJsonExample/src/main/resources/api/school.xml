@@ -1,0 +1,40 @@
+<School name="TMS">
+	<Class id="1">
+		<name>Class 1</name>
+		<Student>
+			<Id>100</Id>
+			<Name>Mike</Name>
+		</Student>
+			<Student>
+			<Id>200</Id>
+			<Name>David</Name>
+		</Student>
+			<Student>
+			<Id>300</Id>
+			<Name>John</Name>
+		</Student>
+			<Student>
+			<Id>400</Id>
+			<Name>James</Name>
+		</Student>
+	</Class>
+	<Class id="8">
+		<name>Class 8</name>
+		<Student>
+			<Id>1001</Id>
+			<Name>Mike</Name>
+		</Student>
+			<Student>
+			<Id>2002</Id>
+			<Name>David</Name>
+		</Student>
+			<Student>
+			<Id>3001</Id>
+			<Name>John</Name>
+		</Student>
+			<Student>
+			<Id>4002</Id>
+			<Name>James</Name>
+		</Student>
+	</Class>
+</School>

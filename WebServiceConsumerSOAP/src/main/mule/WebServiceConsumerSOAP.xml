@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cd9746db-ec99-4251-aea2-c95f5b78467d" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<wsc:config name="Calculator_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="7c397a59-4ecf-434d-ad69-80afe5b74e22" >
+		<wsc:connection wsdlLocation="http://dneonline.com/calculator.asmx?WSDL" service="Calculator" port="CalculatorSoap" address="http://dneonline.com/calculator.asmx" />
+	</wsc:config>
+	<flow name="WebServiceConsumerSOAPFlow" doc:id="3920d1fe-5129-4f4a-a9db-9865d9721ed1" >
+		<http:listener doc:name="APIListener" doc:id="2f0df3e5-2d65-43df-9c4e-c320e4d198c5" config-ref="HTTP_Listener_config" path="/WSConsumer"/>
+		<ee:transform doc:name="Transform Message" doc:id="8602c93f-ad13-4e86-8c72-6b4233d1e3f5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://tempuri.org/
+---
+{
+	ns0#Add: {
+		ns0#intA: attributes.queryParams.NUMBER1,
+		ns0#intB: attributes.queryParams.NUMBER2
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="Add" doc:name="Consume" doc:id="b3b5a98a-846b-46cc-ae96-8347eb47dcfd" config-ref="Calculator_Service_Consumer_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="b6509841-5114-45d2-a7ba-4edaea17d4bd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	AddResponse: {
+		AddResult: payload.body.AddResponse.AddResult
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

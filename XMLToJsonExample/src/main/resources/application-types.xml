@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="StudentXML" format="xml">
+      <types:example format="xml" element="Class" location="api/class_xml.xml"/>
+    </types:type>
+    <types:type name="StudentJson" format="json">
+      <types:example format="json" location="api/class.json"/>
+    </types:type>
+    <types:type name="StudentJson2" format="json">
+      <types:example format="json" location="api/student.json"/>
+    </types:type>
+    <types:type name="NestedChildElementXML" format="xml">
+      <types:example format="xml" element="School" location="api/school.xml"/>
+    </types:type>
+    <types:type name="NestedChildElementJSON" format="json">
+      <types:example format="json" location="api/school.json"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#d68fcff5-d7c2-4a48-9ea8-089cc1aae2dd">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="StudentXML"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="StudentJson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c4818a77-0fd4-4a3c-b6f6-1123ae7a3542">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="StudentXML"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="StudentJson2"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#02cc5968-398e-4458-afb7-30fb6c51f952">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="NestedChildElementXML"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="NestedChildElementJSON"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5a5df5ef-7d31-4424-a9b4-856ab7b8f687">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="NestedChildElementJSON"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="NestedChildElementXML"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

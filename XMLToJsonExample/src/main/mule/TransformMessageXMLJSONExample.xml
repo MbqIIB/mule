@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b35d7087-2482-42ed-8a35-5532b1bdf05e" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="XMLToJsonExampleFlow" doc:id="59aebb4d-95dd-46ce-9149-98633aa87a08" >
+		<http:listener doc:name="Listener" doc:id="48fd256c-6c78-45aa-8009-a290e9d15e20" config-ref="HTTP_Listener_config" path="/XMLToJson" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="d68fcff5-d7c2-4a48-9ea8-089cc1aae2dd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Class: {
+		Student: payload.Class.*Student map ( student , indexOfStudent ) -> {
+			Id: student.Id,
+			Name: student.Name
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="PrivateFlow1" doc:id="00bd2e2b-8c3e-4717-8d53-50aa14cba4fc" >
+		<http:listener doc:name="HTTP Listener" doc:id="69db0d43-de89-4113-8601-0c989cc51da1" config-ref="HTTP_Listener_config" path="/XMLToJson2"/>
+		<ee:transform doc:name="Transform Message" doc:id="c4818a77-0fd4-4a3c-b6f6-1123ae7a3542" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Students: payload.Class.*Student map ( student , indexOfStudent ) -> {
+		Student: {
+			Id: student.Id,
+			Name: student.Name
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="NestedChildFlow" doc:id="c82611af-6b88-45fd-a29a-8e2f3feb1030" >
+		<http:listener doc:name="HTTPListener" doc:id="3e11e88e-48cf-48a9-891d-b9b7d9496f4f" config-ref="HTTP_Listener_config" path="/NestedChildElement"/>
+		<ee:transform doc:name="Transform Message" doc:id="02cc5968-398e-4458-afb7-30fb6c51f952" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	School: {
+		Name: payload.School.@name,
+		Classes: payload.School.*Class map ( class , indexOfClass ) -> {
+			Class: {
+				Id: class.@id as Number,
+				Name: class.name,
+				Students: class.*Student map ( student , indexOfStudent ) -> {
+					Student: {
+						Id: student.Id as Number,
+						Name: student.Name
+					}
+				}
+			}
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="JsonToXMLExampleFlow" doc:id="f492d71e-67e3-4bcb-b02b-2c3e381ae526" >
+		<http:listener doc:name="HTTPListener" doc:id="3e5b9a9b-35c6-4134-af57-eac23103ed15" config-ref="HTTP_Listener_config" path="/JsonToXML"/>
+		<ee:transform doc:name="Transform Message" doc:id="5a5df5ef-7d31-4424-a9b4-856ab7b8f687" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	School @(name: payload.School.Name): {
+		(payload.School.Classes map ( class , indexOfClass ) -> {
+			Class @(id: class.Class.Id): {
+				name: class.Class.Name,
+				(class.Class.Students map ( student , indexOfStudent ) -> {
+					Student: {
+						Id: student.Student.Id,
+						Name: student.Student.Name
+					}
+				})
+			}
+		})
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
