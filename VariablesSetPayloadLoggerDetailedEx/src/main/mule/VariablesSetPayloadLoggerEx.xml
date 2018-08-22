@@ -9,6 +9,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	</http:listener-config>
 	<flow name="VariablesExampleFlow" doc:id="7078356a-343d-452d-b3cf-0330130681e6" >
 		<http:listener doc:name="HTTPListener" doc:id="6b08b0b0-3f93-4c2e-a1c9-425c0b312aad" config-ref="HTTP_Listener_config" path="/VE" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="This Logger will pring payload and attributes" doc:id="35a5b0f9-3e4d-4897-8917-998e6fb294b2" />
 		<set-variable value="#[attributes.queryParams.id1]" doc:name="Set Variable Id1" doc:id="5e99ac28-1410-454d-804c-f6879daad5ed" variableName="id1"/>
 		<set-variable value="#['\'%' ++ attributes.queryParams.id1 ++ '%\'']" doc:name="Set Variable Id2" doc:id="b51e4756-89e5-4e4d-8c9a-06e8f50234d5" variableName="id2" />
 		<set-payload value="#['Flow variable is:'  ++ vars.id1 ++ ' Query Parameter is ' ++ attributes.queryParams.id1]" doc:name="Set Payload" doc:id="a7115701-d619-4c1c-a25c-dc44e896e44f" />
