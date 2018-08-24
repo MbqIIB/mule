@@ -128,17 +128,15 @@ output application/json
 		<try doc:name="Try" doc:id="cf72e1c0-f86e-437b-a65e-dbbb3e8bef29" >
 			<db:insert doc:name="Book Insert" doc:id="206b836d-8731-45da-8f8c-0425392231f0" config-ref="Mysql_Database_Config">
 			<db:sql>INSERT INTO BOOK(id, title, author, pub_year, price) values (:id, :title, :author, :pub_year, :price);</db:sql>
-			<db:input-parameters><![CDATA[#[{'id' : payload.id, 'title' : payload.title, 'author' : payload.author, 'pub_year' : payload.publication_year, 'price' : payload.price}]]]></db:input-parameters>
-		</db:insert>
+			<db:input-parameters><![CDATA[#[{'id': uuid(), 'title' : payload.title, 'author' : payload.author, 'pub_year' : payload.publication_year, 'price' : payload.price}]]]></db:input-parameters>
+     		</db:insert>
 			<ee:transform doc:name="Transform Message" doc:id="33ab9a27-8d5f-42b3-a04b-5d6953c07540">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-	status: "Book created successfully.",
-	affectedRows: payload.affectedRows,
-	generatedKeys: payload.generatedKeys
+	status: "Book created successfully."
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
@@ -153,6 +151,7 @@ output application/json
 		</try>
 		<error-handler >
 			<on-error-continue enableNotifications="true" logException="true" doc:name="Book Save Error Continue" doc:id="250cfaf1-3c9c-4066-b809-fce0fd7a5db3" type="ANY" >
+				<logger level="INFO" doc:name="Logger" doc:id="a318299e-c9ed-4199-b816-af9fe50c4537" message="Save Book Exception is #[error.exception]"/>
 				<ee:transform doc:name="Book Save Error Transform Message" doc:id="43a81ea8-cbbd-4797-8034-df5413788060" >
 					<ee:message >
 						<ee:set-payload ><![CDATA[%dw 2.0
