@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="50540407-42e2-44f8-af60-79482dab1faf" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<db:config name="Mysql_Database_Config" doc:name="Database Config" doc:id="faafa869-905c-4244-b30a-09a47d863527" >
+		<db:my-sql-connection host="localhost" port="3306" user="MuleTestDB" password="MuleTestDB" database="books" />
+	</db:config>
+	<flow name="BookFlow" doc:id="b5a95d8f-cc84-4211-a2b2-6147a1ae26a9" >
+		<http:listener doc:name="BookListener" doc:id="53eb77b7-4f11-4e6c-8107-f5b60f6fca7b" config-ref="HTTP_Listener_config" path="/api/book" allowedMethods="GET" doc:description="TODO: need to work on exception strategy"/>
+		<db:select doc:name="SelectBook" doc:id="b075c317-d29b-4027-b34a-3ce20f822cac" config-ref="Mysql_Database_Config">
+			<db:sql >SELECT * FROM BOOK;</db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="1503ffe8-1e43-44de-87e0-3bb02b76887f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Books: payload map ( payload01 , indexOfPayload01 ) -> {
+		Book: {
+			id: payload01.id,
+			title: payload01.title,
+			author: payload01.author,
+			publication_year: payload01.pub_year,
+			price: payload01.price
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="BookByIdFlow" doc:id="7ff835da-5453-402d-b523-e4266b4a53a2" >
+		<http:listener doc:name="BookByIdListener" doc:id="85edd1c2-4b2f-4406-9795-25878f988552" config-ref="HTTP_Listener_config" path="/api/book/{id}" allowedMethods="GET"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4434590f-7a4b-41ca-ad74-7d64272958ee" />
+		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable id" doc:id="7797c6ac-24ba-4ba3-94b6-2c5af5788d59" variableName="id" />
+		<try doc:name="Try" doc:id="be4e2fb6-f965-451e-b738-c1abc6b8e36e" >
+			<db:select doc:name="Select By Id" doc:id="5196bf71-5ba5-46a4-9d6f-3ea40bdb4c1b" config-ref="Mysql_Database_Config">
+			<db:sql>SELECT * FROM BOOK
+WHERE id = :id;</db:sql>
+			<db:input-parameters><![CDATA[#[{'id' : attributes.uriParams.id}]]]></db:input-parameters>
+		</db:select>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a0512dee-ba16-4847-a81a-23f1b168ad6b" type="DB:QUERY_EXECUTION">
+					<set-payload value="#['Book not found.']" doc:name="Set Payload" doc:id="f1f5e40b-6ebc-43dc-9dab-52656bdd015e" />
+			</on-error-propagate>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="Logger" doc:id="2cc29822-eb34-4fcd-953b-c5bb4ecd2448" />
+		<ee:transform doc:name="Transform Message" doc:id="d4b0cc5c-3ae4-442a-975a-42abdebb85bb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var book = payload[0] // Setting a variable called book with a value of the first item of query's payload
+var id = vars.id default ""
+---
+if (book == null) //empty result set
+{
+	"message" : "No book found for id :" ++ id
+}
+else
+{
+	Book: {
+		id: book.id,
+		title: book.title,
+		author: book.author,
+		publication_year: book.pub_year,
+		price: book.price
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="259c1732-bedf-4019-bb9c-1f6fc986f9fa" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="c8847582-130c-4b6b-9622-8be66399532c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	Message:"Book request was not successful.",
+	Reason: payload,
+	Exception: error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+<flow name="BookSearchFlow" doc:id="34142336-e9ba-41e3-a9f2-fe0eb7e28779" >
+		<http:listener doc:name="BookSearchListener" doc:id="9fde352c-773d-4c19-a4f0-dfc5ce9b6a76" config-ref="HTTP_Listener_config" path="/api/book/search" allowedMethods="GET" doc:description="TODO how to implement dynamic where clause"/>
+		<set-variable value="#['%' ++ upper(attributes.queryParams.title default &quot;|&quot;) ++ '%']" doc:name="Set Variable title" doc:id="0dd6c0fa-2eee-44c8-b384-c174939faa03" variableName="title"/>
+		<set-variable value="#['%' ++ upper(attributes.queryParams.author default &quot;|&quot;) ++ '%']" doc:name="Set Variable author" doc:id="c5728d3b-db8c-4552-8959-fb3f854367dc" variableName="author"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8fe38c85-34bd-4ee4-a626-de475b9e9649" />
+		<db:select doc:name="Book Search" doc:id="bab16671-9014-4594-8baf-b11da12a97aa" config-ref="Mysql_Database_Config">
+			<db:sql >SELECT * FROM BOOK
+WHERE pub_year = :pub_year OR UPPER(author) like :author OR UPPER(title) like :title;</db:sql>
+			<db:input-parameters ><![CDATA[#[{ 'title' :  vars.title , 'author' :   vars.author , 'pub_year' : attributes.queryParams.publication_year}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="a18ae4a5-01f3-43de-8c5c-57598c04821e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Books: payload map ( payload01 , indexOfPayload01 ) -> {
+		Book: {
+			id: payload01.id,
+			title: payload01.title,
+			author: payload01.author,
+			publication_year: payload01.pub_year,
+			price: payload01.price
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="BookSaveFlow" doc:id="a8595570-87d6-48d3-a95d-a57de901903c" >
+		<http:listener doc:name="Book Create Listener" doc:id="5520067f-6726-4d75-8e5c-6dd065cf40d5" config-ref="HTTP_Listener_config" path="/api/book" allowedMethods="POST" doc:description="TODO: Need to work on key generation and generatedKeys in response message."/>
+		<logger level="INFO" doc:name="Logger" doc:id="b6ac376e-010c-4008-9766-9d9741ed5b80" />
+		<try doc:name="Try" doc:id="cf72e1c0-f86e-437b-a65e-dbbb3e8bef29" >
+			<db:insert doc:name="Book Insert" doc:id="206b836d-8731-45da-8f8c-0425392231f0" config-ref="Mysql_Database_Config">
+			<db:sql>INSERT INTO BOOK(id, title, author, pub_year, price) values (:id, :title, :author, :pub_year, :price);</db:sql>
+			<db:input-parameters><![CDATA[#[{'id' : payload.id, 'title' : payload.title, 'author' : payload.author, 'pub_year' : payload.publication_year, 'price' : payload.price}]]]></db:input-parameters>
+		</db:insert>
+			<ee:transform doc:name="Transform Message" doc:id="33ab9a27-8d5f-42b3-a04b-5d6953c07540">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "Book created successfully.",
+	affectedRows: payload.affectedRows,
+	generatedKeys: payload.generatedKeys
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="be7172a9-9bc0-4aa3-9b7e-bdc9bd64f214" type="DB:CONNECTIVITY">
+					<set-payload value="#['Not able to connect database.']" doc:name="Set Payload" doc:id="80a0f002-4c8b-4cd1-a5fa-a774d4e6b841" />
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="Query Execution Error Propagate" doc:id="538fd097-cac3-429c-9d21-717555953537" type="DB:QUERY_EXECUTION" >
+					<set-payload value="#['Not able to execute insert query.']" doc:name="Query_Execution_Set Payload" doc:id="6d97936c-a983-428e-a5b9-4d0f3795d03e" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="Book Save Error Continue" doc:id="250cfaf1-3c9c-4066-b809-fce0fd7a5db3" type="ANY" >
+				<ee:transform doc:name="Book Save Error Transform Message" doc:id="43a81ea8-cbbd-4797-8034-df5413788060" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Message: "Create book request was not successful.",
+	Reason: payload,
+	Exception: error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="BookUpdateFlow" doc:id="31f8425f-ce34-4b35-b887-a53be82823a1" >
+		<http:listener doc:name="Book Update Listener" doc:id="4375f669-4a3b-4f78-8d12-6f96f77c3e4b" config-ref="HTTP_Listener_config" path="/api/book" allowedMethods="PUT"/>
+		<set-variable value="#[payload.id]" doc:name="Set Variable" doc:id="af318077-b84b-4b9c-949a-207428b8917d" variableName="id"/>
+		<db:update doc:name="Book Update" doc:id="b5174a2f-5958-448b-bb20-a35e15e89fc6" config-ref="Mysql_Database_Config">
+			<db:sql >UPDATE BOOK SET title=:title, author= :author, pub_year = :pub_year, price = :price
+WHERE id = :id;</db:sql>
+			<db:input-parameters ><![CDATA[#[{'id' : payload.id, 'title' : payload.title, 'author' : payload.author, 'pub_year' : payload.publication_year, 'price' : payload.price}]]]></db:input-parameters>
+		</db:update>
+		<logger level="INFO" doc:name="Logger" doc:id="80b4d83c-9b95-405c-bcdb-4421dabe574a" />
+		<ee:transform doc:name="Transform Message" doc:id="699a29c8-8170-4b1d-a4d5-97ebb4a4f8c8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: 'Book updated successfully for id:' ++  vars.id default "",
+	affectedRows: payload.affectedRows,
+	generatedKeys: payload.generatedKeys
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="BookDeleteFlow" doc:id="addf1e98-d2cc-45bc-ab5f-0d2eb3ef48a3" >
+		<http:listener doc:name="Book Delete Listener" doc:id="d84e9cf0-8f85-4439-bc36-616af8160de0" config-ref="HTTP_Listener_config" path="/api/book/{id}" allowedMethods="DELETE"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0905d77e-6ad9-4286-b477-29d7e637b3c9" />
+		<set-variable value="#[attributes.uriParams.id]" doc:name="Set Variable" doc:id="235046e5-0a3b-4bcb-a813-8667d852ef95" variableName="id"/>
+		<db:delete doc:name="Book Delete" doc:id="a53bddb7-0638-4afd-a779-5e1bd365744c" config-ref="Mysql_Database_Config">
+			<db:sql >DELETE FROM BOOK 
+WHERE Id = :id;</db:sql>
+			<db:input-parameters ><![CDATA[#[{'id' : attributes.uriParams.id}]]]></db:input-parameters>
+		</db:delete>
+		<logger level="INFO" doc:name="Logger" doc:id="b7e1436d-852f-410e-8136-fbd2d1af5cd6" />
+		<ee:transform doc:name="Transform Message" doc:id="e105f0c3-6680-477d-8c50-f78c8b02dbb4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var id = vars.id default ""
+fun getMessage(vars) = ('Row deleted successfully for id:' ++ id)
+---
+{
+	status: getMessage(vars),
+	affectedRows: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

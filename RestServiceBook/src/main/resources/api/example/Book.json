@@ -1,0 +1,10 @@
+  {
+	"Book": 
+		{
+			"id":100, 
+			"title":"Look Upward",
+			"author":"Mike",
+			"publication_year":"2001",
+			"price": 200.5
+		} 
+  }

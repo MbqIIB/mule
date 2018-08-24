@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="book_json" format="json">
+      <types:example format="json" location="api/example/Books.json"/>
+    </types:type>
+    <types:type name="successResponse" format="json">
+      <types:example format="json" location="api/example/success_response.json"/>
+    </types:type>
+    <types:type name="book1_json" format="json">
+      <types:example format="json" location="api/example/Book.json"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#1503ffe8-1e43-44de-87e0-3bb02b76887f">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="book_json"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d4b0cc5c-3ae4-442a-975a-42abdebb85bb">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="book1_json"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#33ab9a27-8d5f-42b3-a04b-5d6953c07540">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="successResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#699a29c8-8170-4b1d-a4d5-97ebb4a4f8c8">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="successResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#e105f0c3-6680-477d-8c50-f78c8b02dbb4">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="successResponse"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a18ae4a5-01f3-43de-8c5c-57598c04821e">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="book_json"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

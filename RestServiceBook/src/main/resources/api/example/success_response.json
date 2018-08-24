@@ -1,0 +1,12 @@
+{
+	"status": "Row created successfully", 
+	"affectedRows":4,
+	"generatedKeys": [
+		{
+			"key" : "1"
+		}, 
+		{
+			"key" : "2"
+		}
+	]
+}
