@@ -97,10 +97,54 @@ output application/java
 		<http:listener doc:name="BookSearchListener" doc:id="9fde352c-773d-4c19-a4f0-dfc5ce9b6a76" config-ref="HTTP_Listener_config" path="/api/book/search" allowedMethods="GET" doc:description="TODO how to implement dynamic where clause"/>
 		<set-variable value="#['%' ++ upper(attributes.queryParams.title default &quot;|&quot;) ++ '%']" doc:name="Set Variable title" doc:id="0dd6c0fa-2eee-44c8-b384-c174939faa03" variableName="title"/>
 		<set-variable value="#['%' ++ upper(attributes.queryParams.author default &quot;|&quot;) ++ '%']" doc:name="Set Variable author" doc:id="c5728d3b-db8c-4552-8959-fb3f854367dc" variableName="author"/>
-		<logger level="INFO" doc:name="Logger" doc:id="8fe38c85-34bd-4ee4-a626-de475b9e9649" />
+		<ee:transform doc:name="Transform Message" doc:id="932193c4-65d4-4311-b689-cfcc2988ce46" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var trueWhereCondition = " 1=1 "
+---
+{
+	whereCondition: if (isEmpty(attributes.queryParams.title)) trueWhereCondition
+ 			 else trueWhereCondition ++ " AND (UPPER(title) like :title ",
+	queryParamFound: if (isEmpty(attributes.queryParams.title)) "False"
+ 			 else "True"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="e84ab633-2ae2-42a4-95b9-c0e62915bd1d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	whereCondition: if (isEmpty(attributes.queryParams.author)) payload.whereCondition
+ 			else if (payload.queryParamFound startsWith "True") payload.whereCondition ++ " OR UPPER(author) like :author "
+			else if (payload.queryParamFound startsWith "False") payload.whereCondition ++ " AND (UPPER(author) like :author "
+			else payload.whereCondition,
+	queryParamFound: if ((not isEmpty(attributes.queryParams.author)) or (payload.queryParamFound startsWith  "True"))	"True"	
+					 else "False"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="50a9f161-307b-4940-9cc4-baf9df828dd1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	whereCondition: if (isEmpty(attributes.queryParams.publication_year) and (payload.queryParamFound == "True")) payload.whereCondition ++ ")"
+		else if ((not isEmpty(attributes.queryParams.publication_year)) and (payload.queryParamFound == "True")) payload.whereCondition ++ " OR UPPER(pub_year) like :pub_year) "
+		else if ((not isEmpty(attributes.queryParams.publication_year)) and (payload.queryParamFound == "False")) payload.whereCondition ++ " AND (UPPER(pub_year) like :pub_year) "
+		else payload.whereCondition,
+	queryParamFound: if ((not isEmpty(attributes.queryParams.publication_year)) or (payload.queryParamFound == "True"))	"True"	
+				 else "False"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="783aa90c-335a-4af4-9d50-af40d02672fa" />
 		<db:select doc:name="Book Search" doc:id="bab16671-9014-4594-8baf-b11da12a97aa" config-ref="Mysql_Database_Config">
-			<db:sql >SELECT * FROM BOOK
-WHERE pub_year = :pub_year OR UPPER(author) like :author OR UPPER(title) like :title;</db:sql>
+			<db:sql >#[&quot;SELECT * FROM BOOK
+WHERE $(payload.whereCondition);&quot;]</db:sql>
 			<db:input-parameters ><![CDATA[#[{ 'title' :  vars.title , 'author' :   vars.author , 'pub_year' : attributes.queryParams.publication_year}]]]></db:input-parameters>
 		</db:select>
 		<ee:transform doc:name="Transform Message" doc:id="a18ae4a5-01f3-43de-8c5c-57598c04821e" >
@@ -123,7 +167,7 @@ output application/json
 		</ee:transform>
 	</flow>
 	<flow name="BookSaveFlow" doc:id="a8595570-87d6-48d3-a95d-a57de901903c" >
-		<http:listener doc:name="Book Create Listener" doc:id="5520067f-6726-4d75-8e5c-6dd065cf40d5" config-ref="HTTP_Listener_config" path="/api/book" allowedMethods="POST" doc:description="TODO: Need to work on key generation and generatedKeys in response message."/>
+		<http:listener doc:name="Book Create Listener" doc:id="5520067f-6726-4d75-8e5c-6dd065cf40d5" config-ref="HTTP_Listener_config" path="/api/book" allowedMethods="POST" doc:description="TODO: dynamic where clause"/>
 		<logger level="INFO" doc:name="Logger" doc:id="b6ac376e-010c-4008-9766-9d9741ed5b80" />
 		<try doc:name="Try" doc:id="cf72e1c0-f86e-437b-a65e-dbbb3e8bef29" >
 			<db:insert doc:name="Book Insert" doc:id="206b836d-8731-45da-8f8c-0425392231f0" config-ref="Mysql_Database_Config">
