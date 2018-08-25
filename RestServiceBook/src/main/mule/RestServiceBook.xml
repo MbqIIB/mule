@@ -10,8 +10,9 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<http:listener-connection host="localhost" port="8081" />
 	</http:listener-config>
 	<db:config name="Mysql_Database_Config" doc:name="Database Config" doc:id="faafa869-905c-4244-b30a-09a47d863527" >
-		<db:my-sql-connection host="localhost" port="3306" user="MuleTestDB" password="MuleTestDB" database="books" />
+		<db:my-sql-connection host="${db.server}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}" />
 	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="25834c96-1e2f-481d-a25b-139e46ecee02" file="config/db-config-${env}.yaml" />
 	<flow name="BookFlow" doc:id="b5a95d8f-cc84-4211-a2b2-6147a1ae26a9" >
 		<http:listener doc:name="BookListener" doc:id="53eb77b7-4f11-4e6c-8107-f5b60f6fca7b" config-ref="HTTP_Listener_config" path="/api/book" allowedMethods="GET" doc:description="TODO: need to work on exception strategy"/>
 		<db:select doc:name="SelectBook" doc:id="b075c317-d29b-4027-b34a-3ce20f822cac" config-ref="Mysql_Database_Config">
