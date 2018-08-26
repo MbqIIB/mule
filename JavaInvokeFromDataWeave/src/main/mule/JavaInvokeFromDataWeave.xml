@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1f74ad7d-c9cb-4132-a2fd-2cf985de6cf9">
+		<http:listener-connection host="${http.server}" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="38172a51-2eb9-4c3f-b40f-67624027f4d4" file="config/db-config-dev.yaml" />
+	<flow name="JavaInvokeStaticMethodFlow" doc:id="2416dfe4-fd07-405d-8343-7e0e3da20389" >
+		<http:listener doc:name="HTTP Listener" doc:id="0103f120-b91a-430a-a914-3cbdca8dfc1b" config-ref="HTTP_Listener_config" path="/JavaStaticDW" doc:description="how to use package with format com.laxtech.utils"/>
+		<ee:transform doc:name="Transform Message" doc:id="58626155-c1f1-43fb-a7f8-0e80a3ce63fd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import java!myutils::BuildWhereCondition
+output application/json
+---
+{
+	whereCondition: BuildWhereCondition::buildBookWhereCondition(
+		attributes.queryParams.title, 
+		attributes.queryParams.author, 
+		attributes.queryParams.pub_year
+	)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="JavaInvokeInstanceFieldFlow" doc:id="e8cfd9c4-863d-4dc3-93d7-a06a32b4517e" >
+		<http:listener doc:name="HTTPListener" doc:id="ba843ea7-c780-4eb1-a2f8-40e2de0e388c" config-ref="HTTP_Listener_config" path="/JavaInstanceDW"/>
+		<ee:transform doc:name="Transform Message" doc:id="83823ce8-25a0-479f-8fc8-48620846c49b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import java!myutils::BuildWhereCondition
+output application/json
+---
+{
+	whereCondition: BuildWhereCondition::new(
+		attributes.queryParams.title, 
+		attributes.queryParams.author, 
+		attributes.queryParams.pub_year
+		).whereCondition
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="JavaInvokeStaticFlow" doc:id="c7d0d30b-9e87-4f02-b204-a44b9520c645" >
+		<http:listener doc:name="Listener" doc:id="a3435a9a-f080-4c32-b91c-ada6625802bf" config-ref="HTTP_Listener_config" path="/JavaInvokeStatic"/>
+		<java:invoke-static doc:name="Invoke static" doc:id="03b2a00b-5484-441e-b00b-16586008c012" class="com.laxtech.utils.DBUtils" method="buildBookWhereCondition(String , String , String )">
+			<java:args ><![CDATA[#[{ arg0:attributes.queryParams.title, arg1: attributes.queryParams.author, arg2: attributes.queryParams.pub_year }]]]></java:args>
+		</java:invoke-static>
+	</flow>
+	<flow name="JavaInvokeInstanceFlow" doc:id="23cc7133-b0c1-4386-99ca-c80b7307ddcd" >
+		<http:listener doc:name="Listener" doc:id="8aba2b8d-0ac9-41b8-9c14-1203efef9b01" config-ref="HTTP_Listener_config" path="/JavaInvokeInstance"/>
+		<java:invoke-static doc:name="Local Date " doc:id="11a182a5-bd35-4a75-8ac2-3951df903dde" class="java.time.LocalDate" method="now()" target="now"/>
+		<java:invoke-static doc:name="Date Formatter" doc:id="e2155485-e374-4227-bd86-7ac74c49496b" class="java.time.format.DateTimeFormatter" method="ofPattern(String)" target="dateFormatter">
+			<java:args ><![CDATA[#[{arg0: "MMMM dd, yyyy"}]]]></java:args>
+		</java:invoke-static>
+		<java:invoke doc:name="Invoke" doc:id="9daf2d93-1b11-4641-bde4-649f3b89564f" class="java.time.LocalDate" method="format(DateTimeFormatter)" instance="#[vars.now]">
+			<java:args ><![CDATA[#[{arg0: vars.dateFormatter}]]]></java:args>
+		</java:invoke>
+	</flow>
+</mule>
