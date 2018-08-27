@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/jav
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1f74ad7d-c9cb-4132-a2fd-2cf985de6cf9">
 		<http:listener-connection host="${http.server}" port="${http.port}" />
 	</http:listener-config>
-	<configuration-properties doc:name="Configuration properties" doc:id="38172a51-2eb9-4c3f-b40f-67624027f4d4" file="config/db-config-dev.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="25834c96-1e2f-481d-a25b-139e46ecee02" file="config/config-${env}.yaml" />
 	<flow name="JavaInvokeStaticMethodFlow" doc:id="2416dfe4-fd07-405d-8343-7e0e3da20389" >
 		<http:listener doc:name="HTTP Listener" doc:id="0103f120-b91a-430a-a914-3cbdca8dfc1b" config-ref="HTTP_Listener_config" path="/JavaStaticDW" doc:description="how to use package with format com.laxtech.utils"/>
 		<ee:transform doc:name="Transform Message" doc:id="58626155-c1f1-43fb-a7f8-0e80a3ce63fd" >

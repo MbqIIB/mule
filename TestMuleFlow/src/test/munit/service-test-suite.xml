@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="service-test-suite.xml" />
+	<munit:test name="service-test-suite-SelectBookFlowTest" description="Test" doc:id="20e33bdc-f4a6-4893-9d0d-a47e4e6e28ab" >
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="bd880d69-9fd4-4dc2-a8f6-6efefc9cdb96" >
+				<munit:variables >
+					<munit:variable key="id" value="1001" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to SelectBookFlow" doc:id="fa0b00a6-40f8-4860-b9f7-acfa8557d17f" name="SelectBookFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d6a43b07-8644-4425-8d1c-5d1ea91d9e31" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="Book title is null."/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

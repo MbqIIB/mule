@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="a0fa1647-7488-4b9d-8501-78c355d6d257" file="config/config-${env}.yaml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8396c7c7-8db5-47ab-be6b-e7ce49accb5f" >
+		<http:listener-connection host="${http.server}" port="${http.port}" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="30ba9b23-46ee-41b8-bb91-712bc015eae0" >
+		<db:my-sql-connection host="${db.server}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}"/>
+	</db:config>
+	<flow name="SelectBookFlow" doc:id="64a7795f-b743-4a75-9bf8-fb20579d1d55" >
+		<http:listener doc:name="Listener" doc:id="5e16598c-3294-4ece-b1ea-fafd87937dff" config-ref="HTTP_Listener_config" path="/TestMuleFlow/{id}" allowedMethods="GET"/>
+		<logger level="INFO" doc:name="Logger" doc:id="febb173d-aeb5-4c7f-ac96-048d45c82c44" />
+		<logger level="INFO" doc:name="Logger" doc:id="c2858b4d-58a7-442d-9692-f18f3f352405" message="Variable id is :  #[ vars.id]"/>
+		<db:select doc:name="Retrieve Book" doc:id="90e5cfe4-e4cc-45fa-a7e4-f96ed7e3f21a" config-ref="Database_Config">
+			<db:sql >SELECT title FROM book 
+WHERE id=:id</db:sql>
+			<db:input-parameters ><![CDATA[#[{
+'id' : vars.id
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="8585b812-77cc-41c0-b33c-4676237fde95" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload.title]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
