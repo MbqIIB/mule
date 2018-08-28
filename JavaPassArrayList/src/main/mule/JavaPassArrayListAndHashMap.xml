@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ec393b60-baa7-4cb3-9c1b-c4d3b7248a20" >
+		<http:listener-connection host="${http.server}" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="50fd8926-9175-4aeb-b46b-22b0e2072761" file="config/config-${env}.yaml" />
+	<flow name="JavaPassArrayListFlow" doc:id="392cd2d5-5195-4a50-b0c6-62ffb0ea948e" >
+		<http:listener doc:name="Listener" doc:id="cdf6cc07-f7f1-4486-b5dd-e15ee1077c3f" config-ref="HTTP_Listener_config" path="/javaPassList"/>
+		<logger level="INFO" doc:name="Logger" doc:id="51100d10-e787-4bf3-afaf-3f2156d7f66b" />
+		<ee:transform doc:name="Transform Message" doc:id="08218ced-0a61-48e9-9173-422fbe5a7944" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+["1", "2", "3", "4", "5"]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Call Mock Service" doc:id="d71580c8-3dac-4bc1-83e6-ed51d5cd9594" name="MockService" target="result" targetValue="#[payload]"/>
+		<java:invoke-static doc:name="Accumulate Array List" doc:id="50145edc-b4c0-4736-9850-9d50b375a663" class="com.laxtech.utils.AccumulatorUtil" method="accumulate(ArrayList, HashMap)">
+			<java:args ><![CDATA[#[{ arg0:payload, arg1: vars.result.value }]]]></java:args>
+		</java:invoke-static>
+		<ee:transform doc:name="Transform Message" doc:id="62a858cf-c6ac-41f2-b692-f242019f642f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	accumulated_value: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<sub-flow name="MockService" doc:id="27bb0f89-7cdc-46c8-b662-234c234be33a" >
+		<ee:transform doc:name="Transform Message" doc:id="b7d95ea7-d321-4005-96f3-d780b2e13f5a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var dataSource = {
+	"1" : "One",
+	"2" : "Two",
+	"3" : "Three",
+	"4" : "Four",
+	"5" : "Five"
+}
+---
+{
+	value: dataSource
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
