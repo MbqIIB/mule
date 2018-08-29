@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="75b6a820-034f-49a8-be96-a8f6d2f8edbc" >
+		<http:listener-connection host="${http.server}" port="${http.port2}" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="2e03d9aa-b0cd-450a-bf32-bc1b08404801" >
+		<http:request-connection host="${http.server}" port="${http.port}" />
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="ed74260b-9d71-438e-986a-ebbca5318969" file="config/config-${env}.yaml" />
+	<flow name="UntilSuccessFlow" doc:id="ae323a04-3d4f-4ab0-91f7-dc872cf10695" >
+		<http:listener doc:name="Listener" doc:id="9d1822be-8c50-41c2-a179-fa025d6267de" config-ref="HTTP_Listener_config" path="/untilsuccess"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d50e09c9-af92-48ab-b33e-51a19366159f" />
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="5babf2ad-c261-479d-ae05-3ff7ad7b4120" millisBetweenRetries="2000">
+			<flow-ref doc:name="Flow Reference" doc:id="197cc392-e97e-4324-aa2e-dadb2b78e8a4" name="CallHttpAPIFlow"/>
+		</until-successful>
+		<ee:transform doc:name="Transform Message" doc:id="75860d89-0c62-4bd5-ae2b-62061c3a285c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<sub-flow name="CallHttpAPIFlow" doc:id="8c741805-b087-4731-a8a6-f39079567610" >
+		<logger level="INFO" doc:name="Logger" doc:id="4fbf3e60-4e4a-4404-9de9-b84c4941a90d" message="Sending request ................." />
+		<http:request method="GET" doc:name="Request" doc:id="4d97d729-d650-4ae1-afcf-c5e8aa5fabdf" config-ref="HTTP_Request_configuration" path="/javaPassList" />
+	</sub-flow>
+</mule>
