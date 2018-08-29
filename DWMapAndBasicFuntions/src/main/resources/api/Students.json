@@ -1,0 +1,20 @@
+ {
+	"Students" : [
+		{
+		"Name":"Mike",
+		"Hobby":"Music"
+		},
+		{
+		"Name":"David",
+		"Hobby":"TT"
+		},
+		{
+		"Name":"John",
+		"Hobby":"Singing"
+		},
+		{
+		"Name":"James",
+		"Hobby":"Dancing"
+		}              		               
+	]
+ }
