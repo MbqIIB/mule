@@ -19,6 +19,7 @@ output application/json
 ---
 Students: payload.Kids map 
 {
+	Index: $$,
 	Name: upper($.Name),
 	Hobby: lower ($.Hobby)	
 }]]></ee:set-payload>
