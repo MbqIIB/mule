@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="kids" format="json">
+      <types:example format="json" location="api/kids.json"/>
+    </types:type>
+    <types:type name="students" format="json">
+      <types:example format="json" location="api/Students.json"/>
+    </types:type>
+  </types:catalog>
+</types:mule>

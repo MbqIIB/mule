@@ -1,0 +1,9 @@
+http:
+  server: "localhost"
+  port: "8081"
+db:
+  server: "localhost"
+  port: "3306"
+  database: "books"
+  user: "MuleTestDB"
+  password: "MuleTestDB"
