@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="9753a6cf-5077-4a96-a521-f3af4c7cfd5f" file="config/config-${env}.yaml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8f28d746-eea1-4ef1-b704-892037109a01" >
+		<http:listener-connection host="${http.server}" port="${http.port}" />
+	</http:listener-config>
+	<flow name="MainFlow" doc:id="5e1ff2bf-d22f-4347-83a8-b11a81892808" >
+		<http:listener doc:name="Listener" doc:id="caaaf789-7496-410d-b8a9-9c368bbe9b70" config-ref="HTTP_Listener_config" path="/javanew" allowedMethods="GET"/>
+		<java:new doc:name="Tripler" doc:id="b555e7e4-c76e-476b-88ab-b20663376d41" class="com.laxtech.utils.Tripler" constructor="Tripler()" target="tripler"/>
+		<logger level="INFO" doc:name="Logger for tripler instance" doc:id="9fc4d6dd-b9c6-41b0-9875-d37a67eb245b" message="New instance of tripler is #[vars.tripler]" />
+		<java:invoke doc:name="setA" doc:id="3f6c43a7-4b3c-44c4-8f6c-92420f2c8a8f" instance="#[vars.tripler]" class="com.laxtech.utils.Tripler" method="setA(int)">
+			<java:args ><![CDATA[#[{a: 1}]]]></java:args>
+		</java:invoke>
+		<java:invoke doc:name="tripler" doc:id="46efc268-4302-44dc-94c9-9fc69c60d872" instance="#[vars.tripler]" class="com.laxtech.utils.Tripler" method="triple()" target="result">
+		</java:invoke>
+		<logger level="INFO" doc:name="Logger" doc:id="550d7513-94b7-4682-961f-c20255936733" message="The result of triple was #[vars.result]"/>
+		<ee:transform doc:name="Transform Message" doc:id="f1d77fd8-2064-4b8b-83c3-af8eaa39dcf2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	result: vars.result
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
