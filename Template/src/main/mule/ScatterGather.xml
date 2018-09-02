@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="9753a6cf-5077-4a96-a521-f3af4c7cfd5f" file="config/config-${env}.yaml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8f28d746-eea1-4ef1-b704-892037109a01" >
+		<http:listener-connection host="${http.server}" port="${http.port}" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="8cba3da5-1b48-46f2-95d5-d342e90d4138" basePath="/api1" >
+		<http:listener-connection host="${http.server}" port="8082" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config2" doc:name="HTTP Listener config" doc:id="6074cb5f-b2dd-41cd-9dc1-4d47eb0c9e4c" basePath="/api2" >
+		<http:listener-connection host="${http.server}" port="8083" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="11cf8b70-0e4e-4c07-a7b8-33dccd10d18e" basePath="/api1" >
+		<http:request-connection host="${http.server}" port="8082" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="8d9955ca-0d27-4156-af3a-951124396a6b" basePath="/api2" >
+		<http:request-connection host="${http.server}" port="8083" />
+	</http:request-config>
+	<flow name="MainFlow" doc:id="5e1ff2bf-d22f-4347-83a8-b11a81892808" >
+		<http:listener doc:name="Listener" doc:id="caaaf789-7496-410d-b8a9-9c368bbe9b70" config-ref="HTTP_Listener_config" path="/sg" allowedMethods="GET, POST"/>
+		<set-variable value="" doc:name="Set Variable" doc:id="00f0ba24-8501-4ffc-a0b7-0717d8b475fb" variableName="name"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="410260b0-d8e0-4886-a05c-365d0d17c271" >
+			<route >
+				<http:request method="POST" doc:name="Request" doc:id="f23f4c15-8587-4932-91bf-0a4f60e647f2" config-ref="HTTP_Request_configuration" path="/srvc1"/>
+			</route>
+			<route >
+				<http:request method="POST" doc:name="Request" doc:id="7e6d9b66-e35c-4135-91b8-fcabc6cde1f3" config-ref="HTTP_Request_configuration1" path="/srvc2"/>
+				<logger level="INFO" doc:name="Logger" doc:id="f7313614-4e0e-47ff-9dd4-a0ae3a264736" message="#[payload]"/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="1524042d-078c-4179-9721-9e961e93d94a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload[0].payload ++ payload[1].payload
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="ServiceOne" doc:id="e8f954b8-6cb8-4a14-805d-7302621df3d7" >
+		<http:listener doc:name="Listener" doc:id="cdc7d557-0c1b-4d40-ac1e-39cc85a29f56" config-ref="HTTP_Listener_config1" path="/srvc1" allowedMethods="POST"/>
+		<set-payload value='{
+	"Kids": [
+		{
+			"Student": {
+				"Id": 100,
+				"Name": "Mike",
+				"Hobby": "Music",
+				"Age": 12
+			}
+		},
+		{
+			"Student": {
+				"Id": 200,
+				"Name": "David",
+				"Hobby": "TT",
+				"Age": 12
+			}
+		},
+		{
+			"Student": {
+				"Id": 300,
+				"Name": "John",
+				"Hobby": "Singing",
+				"Age": 14
+			}
+		},
+		{
+			"Student": {
+				"Id": 400,
+				"Name": "James",
+				"Hobby": "Dancing",
+				"Age": 15
+			}
+		}
+	]
+}' doc:name="Students" doc:id="79e8168a-f797-4c6f-9285-3ed51bd376c4" />
+	</flow>
+	<flow name="Service2" doc:id="ad227852-20e7-4704-9a9c-c3beaf2bc82c" >
+		<http:listener doc:name="Listener" doc:id="55235528-b5e5-4cb7-95ba-c18126985f53" config-ref="HTTP_Listener_config2" path="/srvc2" allowedMethods="POST"/>
+		<set-payload value='{
+	"Kids": [
+		{
+			"Player": {
+				"Id": 1000,
+				"Name": "Archer",
+				"Hobby": "Music",
+				"Age": 12
+			}
+		},
+		{
+			"Player": {
+				"Id": 2000,
+				"Name": "Don",
+				"Hobby": "TT",
+				"Age": 12
+			}
+		},
+		{
+			"Player": {
+				"Id": 3000,
+				"Name": "Rock",
+				"Hobby": "Singing",
+				"Age": 14
+			}
+		},
+		{
+			"Player": {
+				"Id": 4000,
+				"Name": "Phil",
+				"Hobby": "Dancing",
+				"Age": 15
+			}
+		}
+	]
+}' doc:name="Players" doc:id="a68df85f-e16e-4454-b378-1ffe1b047e10" />
+		<logger level="INFO" doc:name="Logger" doc:id="0f1842ad-8d57-4908-9490-321182ee1a96" />
+	</flow>
+</mule>
