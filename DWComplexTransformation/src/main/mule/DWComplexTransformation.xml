@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="97078aba-8298-4db0-95f4-2a4afc75d917" file="config/config-dev.yaml" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="feda7fe0-213e-4741-941d-62e41837ecb2" basePath="/api" >
+		<http:listener-connection host="${http.server}" port="${http.port}" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="b2e90d1c-483f-4625-ae23-df9037c80e68" basePath="/api" >
+		<http:listener-connection host="${http.server}" port="${http.port}" />
+	</http:listener-config>
+	<flow name="DWComplexTransformationFlow" doc:id="1b0f1af6-27c3-473d-a86a-415eb9c8d9ca" >
+		<http:listener doc:name="Listener" doc:id="26a69ab2-6e27-4161-b7cf-8220227e6f5a" config-ref="HTTP_Listener_config" path="/complex"/>
+		<ee:transform doc:name="Transform Message" doc:id="3b06a204-1502-4739-834c-b4124bea6b7d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var interest = "ALL"
+var section = "Game"
+
+---
+
+using (data = 
+	if (interest != "ALL") payload.Groups[?($.Interest == interest)][0].Category else flatten(payload..Category)
+)
+((flatten((data default [])[?($.Section == section)].Kids) map ({
+	Id: $.Id,
+	Name: $.Name,
+	Hobby: $.Hobby,
+	Age: $.Age
+}) orderBy $.Name) default [])
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

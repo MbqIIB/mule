@@ -1,0 +1,130 @@
+{
+	"Groups": [
+		{
+			"Interest": "Study",
+			"Category": [
+				{
+					"Section": "Science",
+					"Kids": [
+						{
+							"Id": 100,
+							"Name": "Mike",
+							"Hobby": "Music",
+							"Age": 12
+						},
+						{
+							"Id": 200,
+							"Name": "David",
+							"Hobby": "TT",
+							"Age": 12
+						},
+						{
+							"Id": 300,
+							"Name": "John",
+							"Hobby": "Singing",
+							"Age": 14
+						},
+						{
+							"Id": 400,
+							"Name": "James",
+							"Hobby": "Dancing",
+							"Age": 15
+						}
+					]
+				},
+				{
+					"Section": "Game",
+					"Kids": [
+						{
+							"Id": 100,
+							"Name": "Mike",
+							"Hobby": "Music",
+							"Age": 12
+						},
+						{
+							"Id": 200,
+							"Name": "David",
+							"Hobby": "TT",
+							"Age": 12
+						},
+						{
+							"Id": 300,
+							"Name": "John",
+							"Hobby": "Singing",
+							"Age": 14
+						},
+						{
+							"Id": 400,
+							"Name": "James",
+							"Hobby": "Dancing",
+							"Age": 15
+						}
+					]
+				}
+			]
+		},
+		{
+			"Interest": "Player",
+			"Category": [
+				{
+					"Section": "Cricket",
+					"Kids": [
+						{
+							"Id": 1000,
+							"Name": "Archer",
+							"Hobby": "Music",
+							"Age": 12
+						},
+						{
+							"Id": 2000,
+							"Name": "Don",
+							"Hobby": "TT",
+							"Age": 12
+						},
+						{
+							"Id": 3000,
+							"Name": "Rock",
+							"Hobby": "Singing",
+							"Age": 14
+						},
+						{
+							"Id": 4000,
+							"Name": "Phil",
+							"Hobby": "Dancing",
+							"Age": 15
+						}
+					]
+				},
+				{
+					"Section": "Game",
+					"Kids": [
+						{
+							"Id": 1000,
+							"Name": "Archer",
+							"Hobby": "Music",
+							"Age": 12
+						},
+						{
+							"Id": 2000,
+							"Name": "Don",
+							"Hobby": "TT",
+							"Age": 12
+						},
+						{
+							"Id": 3000,
+							"Name": "Rock",
+							"Hobby": "Singing",
+							"Age": 14
+						},
+						{
+							"Id": 4000,
+							"Name": "Phil",
+							"Hobby": "Dancing",
+							"Age": 15
+						}
+					]
+				}
+			]
+		}
+	]
+}

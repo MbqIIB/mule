@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="GroupKids" format="json">
+      <types:example format="json" location="examples/kids.json"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#3b06a204-1502-4739-834c-b4124bea6b7d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="GroupKids"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
