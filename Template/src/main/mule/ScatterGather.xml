@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
 	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
-	<configuration-properties doc:name="Configuration properties" doc:id="9753a6cf-5077-4a96-a521-f3af4c7cfd5f" file="config/config-${env}.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="9753a6cf-5077-4a96-a521-f3af4c7cfd5f" file="config/config-dev.yaml" />
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8f28d746-eea1-4ef1-b704-892037109a01" >
 		<http:listener-connection host="${http.server}" port="${http.port}" />
 	</http:listener-config>
@@ -32,22 +34,26 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 			</route>
 			<route >
 				<http:request method="POST" doc:name="Request" doc:id="7e6d9b66-e35c-4135-91b8-fcabc6cde1f3" config-ref="HTTP_Request_configuration1" path="/srvc2"/>
-				<logger level="INFO" doc:name="Logger" doc:id="f7313614-4e0e-47ff-9dd4-a0ae3a264736" message="#[payload]"/>
 			</route>
 		</scatter-gather>
-		<ee:transform doc:name="Transform Message" doc:id="1524042d-078c-4179-9721-9e961e93d94a" >
+		<ee:transform doc:name="Transform Message" doc:id="1524042d-078c-4179-9721-9e961e93d94a" >			
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
-payload[0].payload ++ payload[1].payload
+flatten(payload..payload.Kids)
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
 	<flow name="ServiceOne" doc:id="e8f954b8-6cb8-4a14-805d-7302621df3d7" >
 		<http:listener doc:name="Listener" doc:id="cdc7d557-0c1b-4d40-ac1e-39cc85a29f56" config-ref="HTTP_Listener_config1" path="/srvc1" allowedMethods="POST"/>
-		<set-payload value='{
+		<ee:transform doc:name="Transform Message" doc:id="9f0f7526-74a8-4570-bd5c-6b97226a77a8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
 	"Kids": [
 		{
 			"Student": {
@@ -82,11 +88,18 @@ payload[0].payload ++ payload[1].payload
 			}
 		}
 	]
-}' doc:name="Students" doc:id="79e8168a-f797-4c6f-9285-3ed51bd376c4" />
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 	<flow name="Service2" doc:id="ad227852-20e7-4704-9a9c-c3beaf2bc82c" >
 		<http:listener doc:name="Listener" doc:id="55235528-b5e5-4cb7-95ba-c18126985f53" config-ref="HTTP_Listener_config2" path="/srvc2" allowedMethods="POST"/>
-		<set-payload value='{
+		<ee:transform doc:name="Transform Message" doc:id="e088fde0-f3bf-42eb-befe-568bdf3918f2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
 	"Kids": [
 		{
 			"Player": {
@@ -121,7 +134,8 @@ payload[0].payload ++ payload[1].payload
 			}
 		}
 	]
-}' doc:name="Players" doc:id="a68df85f-e16e-4454-b378-1ffe1b047e10" />
-		<logger level="INFO" doc:name="Logger" doc:id="0f1842ad-8d57-4908-9490-321182ee1a96" />
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 </mule>

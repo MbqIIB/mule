@@ -1,0 +1,37 @@
+{
+	"Kids": [
+		{
+			"Student": {
+				"Id": 100,
+				"Name": "Mike",
+				"Hobby": "Music",
+				"Age": 12
+			}
+		},
+		{
+			"Student": {
+				"Id": 200,
+				"Name": "David",
+				"Hobby": "TT",
+				"Age": 12
+			}
+		},
+		{
+			"Student": {
+				"Id": 300,
+				"Name": "John",
+				"Hobby": "Singing",
+				"Age": 14
+			}
+		},
+		{
+			"Student": {
+				"Id": 400,
+				"Name": "James",
+				"Hobby": "Dancing",
+				"Age": 15
+			}
+		}
+	]
+}
+{  "Kids": [   {    "Player": {     "Id": 1000,     "Name": "Archer",     "Hobby": "Music",     "Age": 12    }   },   {    "Player": {     "Id": 2000,     "Name": "Don",     "Hobby": "TT",     "Age": 12    }   },   {    "Player": {     "Id": 3000,     "Name": "Rock",     "Hobby": "Singing",     "Age": 14    }   },   {    "Player": {     "Id": 4000,     "Name": "Phil",     "Hobby": "Dancing",     "Age": 15    }   }  ] }
