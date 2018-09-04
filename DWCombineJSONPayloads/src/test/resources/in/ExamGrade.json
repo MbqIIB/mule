@@ -1,0 +1,28 @@
+{
+	"ExamGrade": [
+		{
+			"Student": {
+				"Id": 100,
+				"Grade": "A+"
+			}
+		},
+		{
+			"Student": {
+				"Id": 200,
+				"Grade": "A"
+			}
+		},
+		{
+			"Student": {
+				"Id": 300,
+				"Grade": "C"
+			}
+		},
+		{
+			"Student": {
+				"Id": 400,
+				"Grade": "B+"
+			}
+		}
+	]
+}
