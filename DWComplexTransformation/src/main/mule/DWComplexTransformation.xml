@@ -9,29 +9,45 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="feda7fe0-213e-4741-941d-62e41837ecb2" basePath="/api" >
 		<http:listener-connection host="${http.server}" port="${http.port}" />
 	</http:listener-config>
-	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="b2e90d1c-483f-4625-ae23-df9037c80e68" basePath="/api" >
-		<http:listener-connection host="${http.server}" port="${http.port}" />
-	</http:listener-config>
 	<flow name="DWComplexTransformationFlow" doc:id="1b0f1af6-27c3-473d-a86a-415eb9c8d9ca" >
-		<http:listener doc:name="Listener" doc:id="26a69ab2-6e27-4161-b7cf-8220227e6f5a" config-ref="HTTP_Listener_config" path="/complex"/>
+		<http:listener doc:name="Listener" doc:id="26a69ab2-6e27-4161-b7cf-8220227e6f5a" config-ref="HTTP_Listener_config" path="/complex" allowedMethods="POST" doc:description="http://localhost:8081/api/complex?interest=Study&amp;section=Game"/>
 		<ee:transform doc:name="Transform Message" doc:id="3b06a204-1502-4739-834c-b4124bea6b7d" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
-var interest = "ALL"
-var section = "Game"
+var interest = attributes.queryParams.interest
+var section = attributes.queryParams.section
 
 ---
 
 using (data = 
-	if (interest != "ALL") payload.Groups[?($.Interest == interest)][0].Category else flatten(payload..Category)
+	if (upper(interest) != "ALL") payload.Groups[?($.Interest == interest)][0].Category else flatten(payload..Category)
 )
-((flatten((data default [])[?($.Section == section)].Kids) map ({
+flatten((data default [])[?($.Section == section)].Kids) map ({
 	Id: $.Id,
 	Name: $.Name,
 	Hobby: $.Hobby,
 	Age: $.Age
-}) orderBy $.Name) default [])
+}) orderBy $.Name default []
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="DWAboveTransformationWithoutMapFlow" doc:id="2e1cf566-cd00-4168-a27b-62d7558d8fc6" doc:description="Above Flow Transformation Without Map Operator">
+		<http:listener doc:name="Listener" doc:id="1e8d3c53-c2a8-4819-bbea-794e01c89318" config-ref="HTTP_Listener_config" path="/complexWithoutMap" allowedMethods="POST" doc:description="http://localhost:8081/api/complexWithoutMap?interest=Player&amp;section=Game"/>
+		<ee:transform doc:name="Transform Message" doc:id="298e20f8-d2db-43ad-8522-55def3fe8176" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var interest = attributes.queryParams.interest
+var section = attributes.queryParams.section
+
+---
+
+using (data = 
+	if (upper(interest) != "ALL") payload.Groups[?($.Interest == interest)][0].Category else flatten(payload..Category)
+)
+flatten((data default [])[?($.Section == section)].*Kids) orderBy $.Name default []
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>

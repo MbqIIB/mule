@@ -14,4 +14,13 @@
       </types:input-event>
     </types:processor-declaration>
   </types:enrichment>
+  <types:enrichment select="#298e20f8-d2db-43ad-8522-55def3fe8176">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="GroupKids"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
 </types:mule>

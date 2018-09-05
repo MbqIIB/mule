@@ -1,0 +1,14 @@
+{
+	"Id": 100,
+	"Description": "Base Car",
+	"Price": "2500",
+	"Tested": true,
+	"GPS": {
+		"Descriptoin": "World wide navigation",
+		"Price": "100"
+	},
+	"Camera": {
+		"Descriptoin": "Reverse Camera",
+		"Price": "50"
+	}
+}

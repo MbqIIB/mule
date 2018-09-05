@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="CarType" format="json">
+      <types:example format="json" location="examples/car-4.json"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#17e14fa1-1bbc-4903-8f3f-edeca48c2367">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="CarType"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

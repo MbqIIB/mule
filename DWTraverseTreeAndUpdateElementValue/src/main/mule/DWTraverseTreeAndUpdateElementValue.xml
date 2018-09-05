@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="122697a6-914d-492a-b4fb-d6236b7a5f3c" basePath="/api" >
+		<http:listener-connection host="${http.server}" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="826e7531-f537-42e2-a29c-30af6f6c74f1" file="config/config-dev.yaml" />
+	<flow name="DWTraverseTreeAndUpdateElementValueFlow" doc:id="d1a34ce5-690a-41bf-85bd-e5ea2eb7ef69" >
+		<http:listener doc:name="Listener" doc:id="f83c47d1-3977-433a-b6e3-d49cfcc69f65" config-ref="HTTP_Listener_config" path="/decoratePrice" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="17e14fa1-1bbc-4903-8f3f-edeca48c2367" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var increment = attributes.queryParams.increment
+var fields = ['Price']
+fun updatePrice(oldValue) = oldValue * (1  + increment)
+fun updatePriceInArray(dataArray) = dataArray map {   
+	(applyPriceIncreament($))
+}
+fun findKey(key) = fields contains key
+fun applyPriceIncreament(data) = data mapObject(value, key, index) ->
+    {
+        (key): if (value is Object) applyPriceIncreament(value)
+               else if (value is Array) updatePriceInArray(value)
+               else if (findKey(key as String)) updatePrice(value)
+                 else value
+}
+---
+applyPriceIncreament(payload)
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
