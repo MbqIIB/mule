@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d18eda81-873e-4f88-81c0-9bd74aa70ae6" basePath="/api" >
+		<http:listener-connection host="${http.server}" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="415bd377-05a4-4ade-885f-7e0c86b5b05c" file="config/config-dev.yaml" />
+	<flow name="DWJsonToJavaObjectFlow" doc:id="abf3538e-6107-4b7a-b531-a8bdd7fc34e0" >
+		<http:listener doc:name="Listener" doc:id="3721f6f4-0011-4411-89ef-0d76bbda071d" config-ref="HTTP_Listener_config" path="/jsonToJava" allowedMethods="POST" doc:description="http://localhost:8081/api/jsonToJava?increment=10"/>
+		<ee:transform doc:name="Transform Message" doc:id="5b3a8465-08db-40fa-b097-26884c8b03d7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+type car = Object { class: "com.laxtech.entity.Car"}
+type gPS = Object { class: "com.laxtech.entity.GPS"}
+type camera = Object { class: "com.laxtech.entity.Camera"}
+---
+payload as car
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<java:invoke-static doc:name="Increase Price" doc:id="19854186-b549-48ad-8d17-3f4ec299c551" class="com.laxtech.utils.PriceUtils" method="increasePrice(Car, int)">
+			<java:args ><![CDATA[#[{ arg0:payload, arg1: attributes.queryParams.increment }]]]></java:args>
+		</java:invoke-static>
+		<ee:transform doc:name="Transform Message" doc:id="458fe31e-3f41-4344-9705-230647fff985" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

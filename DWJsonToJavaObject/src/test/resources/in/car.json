@@ -1,0 +1,24 @@
+{
+	"id": 100,
+	"description": "Base Car",
+	"price": 2500,
+	"tested": true,
+	"gps": {
+		"description": "World wide navigation",
+		"price": 100
+	},
+	"camera": {
+		"description": "Reverse Camera",
+		"price": 50
+	},
+	"interiorAccessory" :  [
+		{
+			"description" : "Music System",
+			"price" : 500
+		},
+		{
+			"description" : "TV Set",
+			"price" : 400
+		}
+	]
+}
