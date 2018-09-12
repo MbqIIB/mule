@@ -1,0 +1,14 @@
+http:
+  server: "localhost"
+  port: "8081"
+db:
+  server: "localhost"
+  port: "3306"
+  database: "books"
+  user: "MuleTestDB"
+  password: "MuleTestDB"
+twitter:
+  consumerKey: "![csWm3XdWmusJz5oWtBXbBvu8rB0ejC5WmcapPbdLrCM=]"
+  consumerSecret: "![N7EbwZjf8OjouhZpE0W+d5L1mTue3yvhDmkMCX+dyo6z3Fc6iCRbhvbj0Wz/Uw3b4VKrCHDlSnI=]"
+  accessToken: "![gfmaKudz5+sU9Z670lA0EQkd9/Z287ZlHjDT6fXWeVcyTT9LidYBJHa6pC8nUM6UnH5JyfE8tqM=]"
+  accessTokenSecret: "![J34n2N2kJiPiUwZnczgLLgCGC67+iPpjGiapjCI6A7ppmM1kGsusEjhKxyn8krVZ]"
