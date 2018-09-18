@@ -1,0 +1,19 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:greeting-extn="http://www.mulesoft.org/schema/mule/greeting-extn"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/greeting-extn http://www.mulesoft.org/schema/mule/greeting-extn/current/mule-greeting-extn.xsd">
+
+    <greeting-extn:config name="config" configId="configId">
+        <greeting-extn:connection requiredParameter="aValue" />
+    </greeting-extn:config>
+
+    <flow name="sayHiFlow">
+        <greeting-extn:say-hi person="Mariano Gonzalez"/>
+    </flow>
+
+    <flow name="retrieveInfoFlow">
+        <greeting-extn:retrieve-info config-ref="config"/>
+    </flow>
+
+</mule>

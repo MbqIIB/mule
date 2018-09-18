@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:greeting-extn="http://www.mulesoft.org/schema/mule/greeting-extn" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/greeting-extn http://www.mulesoft.org/schema/mule/greeting-extn/current/mule-greeting-extn.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="37c79e59-cd14-4cfd-8309-dba715252b0a" basePath="/api" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<greeting-extn:config name="Greeting_Extn_Config" doc:name="Greeting Extn Config" doc:id="5cbb3845-7b6c-4daf-b63f-d23ea148dba6" configId="Greeting Extn Config" >
+		<greeting-extn:connection requiredParameter="This is required parameter" />
+	</greeting-extn:config>
+	<flow name="greeting.extn.usageFlow" doc:id="b21c284f-8c3a-42a0-8ad2-c2c9e7042c1d" >
+		<http:listener doc:name="Greeting Usage Listener" doc:id="0507c883-fc61-422b-adaf-746b49789a25" config-ref="HTTP_Listener_config" path="/greeting/*"/>
+		<greeting-extn:say-hi doc:name="Greet" doc:id="32690432-4e97-4695-94ae-8fa98beee194" person="#[attributes.queryParams.person]"/>
+	</flow>
+	<flow name="greeting.extn.usageFlow1" doc:id="73afff91-7fe3-4841-8d04-8bb482ba9ee7" >
+		<http:listener doc:name="Listener" doc:id="643f96d8-f0e3-49dc-98d2-8f1f94ff7fe6" config-ref="HTTP_Listener_config" path="/retrieve_info"/>
+		<greeting-extn:retrieve-info doc:name="Retrieve info" doc:id="e7dd1862-9cc2-4238-a06f-712f5b720f04" config-ref="Greeting_Extn_Config"/>
+	</flow>
+</mule>

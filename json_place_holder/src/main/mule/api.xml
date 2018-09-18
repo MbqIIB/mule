@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:java="http://www.mulesoft.org/schema/mule/java" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
-http://www.mulesoft.org/schema/mule/java http://www.mulesoft.org/schema/mule/java/current/mule-java.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
-    <http:listener-config name="twitter-getstarted-httpListenerConfig" basePath="/api">
-        <http:listener-connection host="${secure::http.server}" port="${secure::http.port}" />
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <http:listener-config name="api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
-    <apikit:config name="twitter-getstarted-config" raml="twitter-getstarted.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="212aa324-3db2-4d09-b2d4-6eb05bfaae6a" file="config/config-dev-secure.yaml" key="${secret.key}" >
-		<secure-properties:encrypt algorithm="Blowfish" />
-	</secure-properties:config>
-	<flow name="twitter-getstarted-main">
-        <http:listener config-ref="twitter-getstarted-httpListenerConfig" path="/twitter/v1.1/*" allowedMethods="POST" doc:description="http://localhost:8081/api/twitter/v1.1/tweet">
+    <apikit:config name="api-config" raml="api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="3efe88bf-e4c8-4003-b4a1-16ed51b8728d" >
+		<http:request-connection host="jsonplaceholder.typicode.com" port="80" />
+	</http:request-config>
+	<flow name="api-main">
+        <http:listener config-ref="api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="twitter-getstarted-config" />
+        <apikit:router config-ref="api-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
@@ -100,8 +100,8 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="twitter-getstarted-console">
-        <http:listener config-ref="twitter-getstarted-httpListenerConfig" path="/console/*">
+    <flow name="api-console">
+        <http:listener config-ref="api-httpListenerConfig" path="/console/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:response>
@@ -110,7 +110,7 @@ output application/json
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:console config-ref="twitter-getstarted-config" />
+        <apikit:console config-ref="api-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:NOT_FOUND">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
@@ -127,31 +127,95 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="post:\tweet:application\json:twitter-getstarted-config">
-		<ee:transform doc:name="Transform Message" doc:id="07aa3acd-63c2-498d-ab3a-c07e1cbb848f">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/java
-
+    <flow name="get:\users\userbyid:api-config">
+        <http:listener doc:name="Listener" doc:id="fb2f32d2-74dc-43e7-aa80-4cdde598b53d" doc:description="As explained in https://docs.mulesoft.com/apikit/v/4.x/filter-users-id-task it is appropriate to use query parameter instead of uri parameter should be used.
+They used query parameter for example perpose only. And has been done here the same as well." config-ref="api-httpListenerConfig" path="/placeholder/byid"/>
+		<http:request method="GET" doc:name="Request" doc:id="71338eab-7027-4b3e-9692-0733ffe42aca" config-ref="HTTP_Request_configuration" path="/users">
+			<http:query-params ><![CDATA[#[output applicaton/java
 ---
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<java:new doc:name="Secure Config" doc:id="870f0af0-6905-45ba-80f6-98fa3ffdc674" class="com.laxtech.twitter.context.TwitterSecureContext" constructor="TwitterSecureContext(String, String, String, String)" target="twSecureContext">
-			<java:args ><![CDATA[#[{arg0: "${secure::twitter.consumerKey}", arg1: "${secure::twitter.consumerSecret}", arg2: "${secure::twitter.accessToken}", arg3: "${secure::twitter.accessTokenSecret}" }]]]></java:args>
-		</java:new>
-		<java:invoke-static doc:name="Post Tweet" doc:id="86ab3c64-799d-409c-bfda-7dd1625aa5b2" class="com.laxtech.twitter.TwitterRestApi" method="postTweet(String, TwitterSecureContext)">
-			<java:args><![CDATA[#[{ arg0: payload.status, arg1: vars.twSecureContext }]]]></java:args>
-		</java:invoke-static>
-		<ee:transform doc:name="Transform Message" doc:id="f1c7d101-306a-4eb1-a5d2-432068933329" >
+{
+	id : attributes.queryParams.id
+}]]]></http:query-params>
+		</http:request>
+    </flow>
+    <flow name="get:\users:api-config">
+        <http:listener doc:name="Listener" doc:id="06d91246-3e63-450c-8b8a-f191cf9cb858" config-ref="api-httpListenerConfig" path="/placeholder"/>
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="0253c3df-cec4-462b-9578-e932311d269c">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    id: 1,
+    name: "Leanne Graham",
+    username: "Bret",
+    email: "Sincere@april.biz",
+    address: {
+      street: "Kulas Light",
+      suite: "Apt. 556",
+      city: "Gwenborough",
+      zipcode: "92998-3874",
+      geo: {
+        lat: "-37.3159",
+        lng: "81.1496"
+      }
+    },
+    phone: "1-770-736-8031 x56442",
+    website: "hildegard.org",
+    company: {
+      name: "Romaguera-Crona",
+      catchPhrase: "Multi-layered client-server neural-net",
+      bs: "harness real-time e-markets"
+    }
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="583e5ffe-843a-4bfe-8122-3ef1f0f20aef" config-ref="HTTP_Request_configuration" path="/users"/>
+    </flow>
+	<flow name="Copy_of_get:\users:api-config" doc:id="c9300bad-af32-4cb8-8f1d-8125386a30a8" >
+		<http:listener doc:name="Copy_of_Listener" doc:id="74f5f3a0-f997-45b6-a8db-9cb0aca33ebf" config-ref="api-httpListenerConfig" path="/placeholder/names" />
+		<ee:transform doc:name="Copy_of_Transform Message" doc:id="b187efc3-c731-437b-b880-0fd0d39bd063" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
-
 ---
-payload]]></ee:set-payload>
+[
+  {
+    id: 1,
+    name: "Leanne Graham",
+    username: "Bret",
+    email: "Sincere@april.biz",
+    address: {
+      street: "Kulas Light",
+      suite: "Apt. 556",
+      city: "Gwenborough",
+      zipcode: "92998-3874",
+      geo: {
+        lat: "-37.3159",
+        lng: "81.1496"
+      }
+    },
+    phone: "1-770-736-8031 x56442",
+    website: "hildegard.org",
+    company: {
+      name: "Romaguera-Crona",
+      catchPhrase: "Multi-layered client-server neural-net",
+      bs: "harness real-time e-markets"
+    }
+  }
+]]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="67d7bb0d-411d-4960-a353-7c0b81ee2e08" />
-    </flow>
+		<http:request method="GET" doc:name="Copy_of_Request" doc:id="01f72f5c-cdcd-4d2a-9dbd-920626c44708" config-ref="HTTP_Request_configuration" path="/users" />
+		<ee:transform doc:name="Transform Message" doc:id="54af1487-3eb3-4669-9f4d-74ae0adba3f0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.name]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 </mule>
