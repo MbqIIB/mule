@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d5fc38e1-7674-4646-ae2b-aa963de87bc9" >
+		<http:listener-connection host="localhost" port="8082" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="61b6fb78-ed96-4ef9-9f6e-72f298270d66" basePath="/api" >
+		<http:request-connection host="localhost" port="8081" connectionIdleTimeout="3000000">
+			<http:authentication >
+				<http:basic-authentication username="testuser" password="testuser" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<flow name="basic-auth-simple-api-invokeFlow" doc:id="0d16ab1f-ff04-42d4-b5ff-65b7565a9a5c" >
+		<http:listener doc:name="Listener" doc:id="e8f2501e-d609-4abb-b0ba-ee617f6a76f9" config-ref="HTTP_Listener_config" path="/test_basic_auth/{id}" allowedMethods="GET" doc:description="http://localhost:8082/test_basic_auth/200"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c62202dc-a122-4987-981d-c880414f75b5" message="uri parameter id is #[attributes.uriParams.id]"/>
+		<http:request method="GET" doc:name="Request" doc:id="8fb68c36-921e-402e-92da-c3b77758be0f" config-ref="HTTP_Request_configuration" path="/accounts/{id}">
+			<http:uri-params ><![CDATA[#[output applicaton/java
+---
+{
+	id : attributes.uriParams.id
+}]]]></http:uri-params>
+		</http:request>
+	</flow>
+</mule>

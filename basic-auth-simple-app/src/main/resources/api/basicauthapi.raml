@@ -1,0 +1,39 @@
+#%RAML 1.0
+title: Basic Auth API
+version: v1
+protocols: [ HTTP ]
+baseUri: https://mocksvc.mulesoft.com/mocks/8322b8ba-ec93-4ef3-82b5-8272aa2b41e8 # baseUri:
+mediaType: application/json
+securitySchemes:
+  basicAuth:
+    description: First simple auth
+    type: Basic Authentication
+    describedBy:
+      headers:
+        Authorization:
+          description: Base64-encoded "username:password"
+        type: string
+      responses:
+        401:
+          description: |
+            Unauthorized: username or password or the combination is invalid
+types:
+  Account:
+    properties:
+      id: integer
+      type: string
+      name: string
+  Error:
+    properties:
+      code: integer
+      errorMessage: string
+/accounts:
+  /{id}:
+    get:
+      description: get an account information by id
+      responses:
+        200:
+          body:
+            application/json:
+              type: Account
+              example: { "id": 1234, "name": "Gary Liu", "type": "checking" }
