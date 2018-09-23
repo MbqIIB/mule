@@ -1,0 +1,13 @@
+#%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/a694c7de-f302-4180-ba0d-9e53d124af33 # 
+title: ems
+version: v1
+/employees:
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              [{"name":"John","age":23},
+               {"name":"Mik","age":43}]

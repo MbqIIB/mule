@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
+	xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"     
+	
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/oauth2-provider 
+http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd
+http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd">
+	<http:listener-config name="listenerConfig"
+		doc:name="HTTP Listener config" doc:id="c09dcf20-d436-4669-93af-56c630a7edfc">
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	
+
+		
+	    <oauth2-provider:config name="OAuth2Provider" doc:name="Oauth2 Provider Config" doc:id="26d80d6a-50df-490e-a35e-168d64f2b00b"
+                            providerName="Test OAuth2Provider"
+                            resourceOwnerSecurityProvider="resourceOwnerSecurityProvider"
+                            clientSecurityProvider="clientSecurityProvider"
+                            supportedGrantTypes="${allSupportedGrantTypes}"
+                            listenerConfig="listenerConfig"
+                            clientStore="clientObjectStore"
+                            scopes="GUEST,USER,ADMIN"
+                            defaultScopes="USER"
+                            supportedGrantTypes="${allSupportedGrantTypes}">
+        <oauth2-provider:client-validation-rate-limiter>
+            <oauth2-provider:period-rate-limiter maximumFailureCount="6"/>
+        </oauth2-provider:client-validation-rate-limiter>
+        <oauth2-provider:token-config tokenStore="tokenObjectStore">
+            <oauth2-provider:refresh-token-strategy>
+                <oauth2-provider:multiple-refresh-tokens/>
+            </oauth2-provider:refresh-token-strategy>
+        </oauth2-provider:token-config>
+        <oauth2-provider:authorization-config loginPage="static/auth.html" authorizationCodeStore="authorizationCodeObjectStore"/>
+        <oauth2-provider:clients>
+			<oauth2-provider:client clientId="cdf7ab11-7d90-4b74-9388-90107caf620e" secret="0b2f0fecfe404fc598f6cd53005ceebd" />
+
+        </oauth2-provider:clients>
+    </oauth2-provider:config>
+
+	<flow name="simple-oauth-providerFlow" doc:id="793fba43-d29c-455a-af70-b44da82102a8" >
+		<http:listener doc:name="Listener" doc:id="126228e8-a885-4550-afe3-4f1923c7fc86" config-ref="listenerConfig" path="/oauth"/>
+		<oauth2-provider:validate-token doc:name="Validate token" doc:id="c522275c-fe6a-4b4b-b273-d4feead7f7e2" config-ref="OAuth2Provider"/>
+		<ee:transform doc:name="Transform Message" doc:id="43888519-636f-4f4f-9689-c217810ff04a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Simple Oauth Provider"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
