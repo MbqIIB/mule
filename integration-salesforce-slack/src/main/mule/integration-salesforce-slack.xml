@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/slack http://www.mulesoft.org/schema/mule/sl
 	<slack:config name="Slack_Config" doc:name="Slack Config"
 		doc:id="e4f8e9ed-8677-4bc6-83ee-7fe7eee4c6fc">
 		<slack:token-connection
-			token="xoxp-442653466711-441413694676-441415753044-ad9d26e09eea81d6a58b76ca93e515c2" />
+			token="securethistokenbeforecommit" />
 	</slack:config>
 	<flow name="slack-connector-exampleFlow" doc:id="02b63460-573d-4af1-af0b-c558aa5861fb">
 		<scheduler doc:name="Schdule Product Leads" doc:id="393f6ec2-fa73-4405-aedc-6e9b9075bf20" doc:description="Every Week on Wednesday at 8:05PM
