@@ -1,60 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:spring="http://www.mulesoft.org/schema/mule/spring"
-	xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"     
-	
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/oauth2-provider 
-http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd
-http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd">
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/oauth2-provider http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd
+        http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+        http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+        http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
 	<http:listener-config name="listenerConfig"
-		doc:name="HTTP Listener config" doc:id="c09dcf20-d436-4669-93af-56c630a7edfc">
-		<http:listener-connection host="localhost" port="8081" />
+		doc:name="HTTP Listener config" doc:id="08ae4d38-974b-45b3-9b6e-99f6398bb3cb">
+		<http:listener-connection host="localhost"
+			port="8081" />
 	</http:listener-config>
-	
 
-		
-	    <oauth2-provider:config name="OAuth2Provider" doc:name="Oauth2 Provider Config" doc:id="26d80d6a-50df-490e-a35e-168d64f2b00b"
-                            providerName="Test OAuth2Provider"
-                            resourceOwnerSecurityProvider="resourceOwnerSecurityProvider"
-                            clientSecurityProvider="clientSecurityProvider"
-                            supportedGrantTypes="${allSupportedGrantTypes}"
-                            listenerConfig="listenerConfig"
-                            clientStore="clientObjectStore"
-                            scopes="GUEST,USER,ADMIN"
-                            defaultScopes="USER"
-                            supportedGrantTypes="${allSupportedGrantTypes}">
-        <oauth2-provider:client-validation-rate-limiter>
-            <oauth2-provider:period-rate-limiter maximumFailureCount="6"/>
-        </oauth2-provider:client-validation-rate-limiter>
-        <oauth2-provider:token-config tokenStore="tokenObjectStore">
-            <oauth2-provider:refresh-token-strategy>
-                <oauth2-provider:multiple-refresh-tokens/>
-            </oauth2-provider:refresh-token-strategy>
-        </oauth2-provider:token-config>
-        <oauth2-provider:authorization-config loginPage="static/auth.html" authorizationCodeStore="authorizationCodeObjectStore"/>
-        <oauth2-provider:clients>
-			<oauth2-provider:client clientId="cdf7ab11-7d90-4b74-9388-90107caf620e" secret="0b2f0fecfe404fc598f6cd53005ceebd" />
+	<oauth2-provider:config name="OAuth2Provider"
+		providerName="Test OAuth2Provider" resourceOwnerSecurityProvider="resourceOwnerSecurityProvider"
+		clientSecurityProvider="clientSecurityProvider" supportedGrantTypes="${allSupportedGrantTypes}"
+		listenerConfig="listenerConfig" clientStore="clientObjectStore"
+		scopes="GUEST,USER,ADMIN" defaultScopes="USER">
+		<oauth2-provider:client-validation-rate-limiter>
+			<oauth2-provider:period-rate-limiter
+				maximumFailureCount="6" />
+		</oauth2-provider:client-validation-rate-limiter>
+		<oauth2-provider:token-config tokenStore="tokenObjectStore" path="/oauth/token">
+			<oauth2-provider:refresh-token-strategy>
+				<oauth2-provider:multiple-refresh-tokens />
+			</oauth2-provider:refresh-token-strategy>
+		</oauth2-provider:token-config>
+		<oauth2-provider:authorization-config
+			loginPage="static/auth.html" authorizationCodeStore="authorizationCodeObjectStore" path="/oauth/authorize"/>
+<!--  		<oauth2-provider:clients>
+			<oauth2-provider:client clientId="0b2f0fecfe404fc598f6cd53005ceebd"
+				clientName="Sanjeev" secret="1E7a5256c38C4C5Ca5A34a3a19daBfB8" 
+				description="Oauth 2 client" type="CONFIDENTIAL">
+				<oauth2-provider:client-redirect-uris>
+					<oauth2-provider:client-redirect-uri
+						value="http://localhost:8081/redirect" />
+				</oauth2-provider:client-redirect-uris>
+				<oauth2-provider:client-authorized-grant-types>
+					<oauth2-provider:client-authorized-grant-type
+						value="CLIENT_CREDENTIALS" />				
+				</oauth2-provider:client-authorized-grant-types>
+				<oauth2-provider:client-scopes>
+					<oauth2-provider:client-scope value="USER" />
+				</oauth2-provider:client-scopes>
+			</oauth2-provider:client>
+		</oauth2-provider:clients> -->
+	</oauth2-provider:config>
 
-        </oauth2-provider:clients>
-    </oauth2-provider:config>
+	<flow name="validation-flow">
+		<http:listener doc:name="Listener"
+			doc:id="3b91b745-f5d3-4f0b-95a5-95c674e7f19a" config-ref="listenerConfig"
+			path="/validate" doc:description="-7http://localhost:8081/oauth/token?client_id=&lt;id&gt;---
+&amp;grant_type=client_credentials&amp;scope=USER
+http://localhost:8081/validate?access_token=&lt;token&gt;"/>
+		<logger level="INFO" doc:name="Logger" doc:id="9e11bd42-864a-4ab8-97e4-adc216fba889" message="#[attributes.queryParams.access_token]"/>
+ 		<oauth2-provider:validate-token
+			doc:name="Validate token" doc:id="7f5a36bc-00b8-46ea-be42-4f6e142dc1d0"
+			config-ref="OAuth2Provider" accessToken="#[attributes.queryParams.access_token]"/>
+		<logger level="INFO" doc:name="Logger"
+			doc:id="6cda3011-d8f3-4299-bfbc-3b69f043833d" message="#[payload]"/>
+	</flow>
+	<flow name="crate-client-flow" doc:id="31e1ca33-766e-4496-a123-b34abb5c4090" >
+		<http:listener doc:name="Listener" doc:id="d5a641f4-ed59-4077-9c24-3d10ca6baf8c" config-ref="listenerConfig" path="/create_client" doc:description="http://localhost:8081/create_client?client_id=&lt;id&gt;&amp;client_secret=&lt;secret&gt;&amp;grant_types=CLIENT_CREDENTIALS&amp;scopes=USER&amp;client_name=Sanjeev&amp;client_description=Laxsystem OAuth Client
 
-	<flow name="simple-oauth-providerFlow" doc:id="793fba43-d29c-455a-af70-b44da82102a8" >
-		<http:listener doc:name="Listener" doc:id="126228e8-a885-4550-afe3-4f1923c7fc86" config-ref="listenerConfig" path="/oauth"/>
-		<oauth2-provider:validate-token doc:name="Validate token" doc:id="c522275c-fe6a-4b4b-b273-d4feead7f7e2" config-ref="OAuth2Provider"/>
-		<ee:transform doc:name="Transform Message" doc:id="43888519-636f-4f4f-9689-c217810ff04a" >
+grant_types value should in in capital and coma separated."/>
+		<logger level="INFO" doc:name="Log arrays" doc:id="ab96ab3b-462a-480d-9b15-45642bd5621f" message="client id: #[attributes.queryParams.client_id]   grant_types: #[(attributes.queryParams.grant_types splitBy ',')]  scope: #[(attributes.queryParams.scopes splitBy ',')]"/>
+		<ee:transform doc:name="Grant Types" doc:id="1403af19-03b2-4eb4-ad88-6a229bd790b4" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	message: "Simple Oauth Provider"
-}]]></ee:set-payload>
 			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="grantTypes" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.grant_types default "" splitBy ","]]></ee:set-variable>
+			</ee:variables>
 		</ee:transform>
+		<ee:transform doc:name="Scopes" doc:id="09566ff7-4bd0-4ed7-807f-31cdb3871fd7" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="scopes" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.scopes default "" splitBy ","]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log vars" doc:id="663e7fce-4967-4a00-a3a1-390b4e5365fb" message="grant_types: #[vars.grantTypes]  scope: #[vars.scopes]" />
+		<oauth2-provider:create-client doc:name="Create client" doc:id="502fc54b-b83e-46e9-9608-26404e9e2a88" config-ref="OAuth2Provider" clientId="#[attributes.queryParams.client_id]" type="CONFIDENTIAL" secret="#[attributes.queryParams.client_secret]" clientName="#[attributes.queryParams.client_name]" authorizedGrantTypes="#[vars.grantTypes]" description="#[attributes.queryParams.client_description]" scopes="#[vars.scopes]" />
+	</flow>
+	<flow name="delete-client-flow" doc:id="d40dfbcb-3f73-42c5-9acb-ffe631f8b6b9" >
+		<http:listener doc:name="Listener" doc:id="caf756eb-9a38-49a0-8b13-2ec46ae361e2" config-ref="listenerConfig" path="/delete_client"/>
+		<logger level="INFO" doc:name="Logger" doc:id="cd4970ac-13e0-4089-b236-a81b561d1560" message="#[attributes.queryParams.client_id]"/>
+		<oauth2-provider:delete-client doc:name="Delete client" doc:id="ef979fea-3beb-40a8-9ae4-209ad6bf5c74" config-ref="OAuth2Provider" clientId="0b2f0fecfe404fc598f6cd53005ceebd"/>
 	</flow>
 </mule>
