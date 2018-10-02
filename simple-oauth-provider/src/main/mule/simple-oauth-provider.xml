@@ -31,8 +31,8 @@
 		<oauth2-provider:authorization-config
 			loginPage="static/auth.html" authorizationCodeStore="authorizationCodeObjectStore" path="/oauth/authorize"/>
 <!--  		<oauth2-provider:clients>
-			<oauth2-provider:client clientId="0b2f0fecfe404fc598f6cd53005ceebd"
-				clientName="Sanjeev" secret="1E7a5256c38C4C5Ca5A34a3a19daBfB8" 
+			<oauth2-provider:client clientId="client1"
+				clientName="Sanjeev" secret="secret1" 
 				description="Oauth 2 client" type="CONFIDENTIAL">
 				<oauth2-provider:client-redirect-uris>
 					<oauth2-provider:client-redirect-uri
@@ -55,12 +55,12 @@
 			path="/validate" doc:description="-7http://localhost:8081/oauth/token?client_id=&lt;id&gt;---
 &amp;grant_type=client_credentials&amp;scope=USER
 http://localhost:8081/validate?access_token=&lt;token&gt;"/>
-		<logger level="INFO" doc:name="Logger" doc:id="9e11bd42-864a-4ab8-97e4-adc216fba889" message="#[attributes.queryParams.access_token]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="9e11bd42-864a-4ab8-97e4-adc216fba889" message='#["attributes.queryParams.access_token"]'/>
  		<oauth2-provider:validate-token
 			doc:name="Validate token" doc:id="7f5a36bc-00b8-46ea-be42-4f6e142dc1d0"
 			config-ref="OAuth2Provider" accessToken="#[attributes.queryParams.access_token]"/>
 		<logger level="INFO" doc:name="Logger"
-			doc:id="6cda3011-d8f3-4299-bfbc-3b69f043833d" message="#[payload]"/>
+			doc:id="6cda3011-d8f3-4299-bfbc-3b69f043833d" message='#["payload"]'/>
 	</flow>
 	<flow name="crate-client-flow" doc:id="31e1ca33-766e-4496-a123-b34abb5c4090" >
 		<http:listener doc:name="Listener" doc:id="d5a641f4-ed59-4077-9c24-3d10ca6baf8c" config-ref="listenerConfig" path="/create_client" doc:description="http://localhost:8081/create_client?client_id=&lt;id&gt;&amp;client_secret=&lt;secret&gt;&amp;grant_types=CLIENT_CREDENTIALS&amp;scopes=USER&amp;client_name=Sanjeev&amp;client_description=Laxsystem OAuth Client
@@ -93,6 +93,6 @@ attributes.queryParams.scopes default "" splitBy ","]]></ee:set-variable>
 	<flow name="delete-client-flow" doc:id="d40dfbcb-3f73-42c5-9acb-ffe631f8b6b9" >
 		<http:listener doc:name="Listener" doc:id="caf756eb-9a38-49a0-8b13-2ec46ae361e2" config-ref="listenerConfig" path="/delete_client"/>
 		<logger level="INFO" doc:name="Logger" doc:id="cd4970ac-13e0-4089-b236-a81b561d1560" message="#[attributes.queryParams.client_id]"/>
-		<oauth2-provider:delete-client doc:name="Delete client" doc:id="ef979fea-3beb-40a8-9ae4-209ad6bf5c74" config-ref="OAuth2Provider" clientId="0b2f0fecfe404fc598f6cd53005ceebd"/>
+		<oauth2-provider:delete-client doc:name="Delete client" doc:id="ef979fea-3beb-40a8-9ae4-209ad6bf5c74" config-ref="OAuth2Provider" clientId="#[attributes.queryParams.client_id]"/>
 	</flow>
 </mule>
