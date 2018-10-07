@@ -6,11 +6,11 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd">
 
-        <ss:authentication-manager id="resourceOwnerAuthenticationManager">
+         <ss:authentication-manager id="resourceOwnerAuthenticationManager">
             <ss:authentication-provider>
                 <ss:user-service id="resourceOwnerUserService">
                     <ss:user name="rousr"
-                             password="ropwd+%"
+                             password="ropwd12"
                              authorities="RESOURCE_OWNER" />
                 </ss:user-service>
             </ss:authentication-provider>
@@ -20,7 +20,7 @@
             <ss:authentication-provider>
                 <ss:user-service id="clientUserService">
                     <ss:user name="clusr"
-                             password="clpwd+%"
+                             password="clpwd12"
                              authorities="CLIENT" />
                 </ss:user-service>
             </ss:authentication-provider>

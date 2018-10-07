@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="679e1a64-cef2-459d-b09c-81cb2d934e4e" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="0fe70bc4-2a49-4642-bfee-fcdd675ffb82" basePath="/api" >
+		<http:request-connection host="http://employee-oauth2-secure.us-e2.cloudhub.io" >
+			<http:authentication >
+				<oauth:client-credentials-grant-type clientId="${client.id}" clientSecret="${client.secret}" tokenUrl="http://oauth2-simple-provider.us-e2.cloudhub.io/oauth/token" tokenManager="Token_manager_config" scopes="USER"/>
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<oauth:token-manager-config name="Token_manager_config" doc:name="Token manager config" doc:id="3f6ef259-4790-46b1-8f7a-1a706331048c" objectStore="Token_Object_store"/>
+	<os:object-store name="Token_Object_store" doc:name="Object store" doc:id="d6399685-0194-429d-9684-b29c2d11d8ec" />
+	<configuration-properties doc:name="Configuration properties" doc:id="37a21dd9-5022-4a8b-afdf-74974286a371" file="config/config-dev.yaml" />
+	<flow name="oauth2-invoke-secure-api-emsFlow" doc:id="9902bdc8-2be9-4d3a-80e5-c9a2ec49d723" >
+		<http:listener doc:name="Listener" doc:id="a70807d2-bccb-4e69-be38-4daf0215c8ce" config-ref="HTTP_Listener_config" path="/secure"/>
+		<logger level="INFO" doc:name="Log client" doc:id="82822ad3-f4f6-4c69-a480-111cb18acbcd" message="Client id:${client.id} | Client secret:${client.secret}"/>
+		<http:request method="GET" doc:name="Request" doc:id="19624179-3516-4fe3-be66-812007ba49e8" config-ref="HTTP_Request_configuration" path="/employees"/>
+	</flow>
+</mule>

@@ -10,7 +10,8 @@
 
     <spring:config name="springConfig" files="beans.xml"/>
 
-    <global-property name="allSupportedGrantTypes" value="AUTHORIZATION_CODE,IMPLICIT,RESOURCE_OWNER_PASSWORD_CREDENTIALS,CLIENT_CREDENTIALS"/>
+    <!-- <global-property name="allSupportedGrantTypes" value="AUTHORIZATION_CODE,IMPLICIT,RESOURCE_OWNER_PASSWORD_CREDENTIALS,CLIENT_CREDENTIALS"/> -->
+    <global-property name="allSupportedGrantTypes" value="CLIENT_CREDENTIALS"/>
 
     <os:object-store name="clientObjectStore"
                      persistent="true"/>

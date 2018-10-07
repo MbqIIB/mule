@@ -1,0 +1,15 @@
+http:
+  server: "localhost"
+  port: "8080"
+db:
+  server: "localhost"
+  port: "3306"
+  database: "books"
+  user: "MuleTestDB"
+  password: "MuleTestDB"
+keystore:
+  keyPassword: "pa$$w0rd0"
+  password: "pa$$w0rd0"
+client:
+  id: "0b2f0fecfe404fc598f6cd53005ceebd"
+  secret: "1E7a5256c38C4C5Ca5A34a3a19daBfB8"

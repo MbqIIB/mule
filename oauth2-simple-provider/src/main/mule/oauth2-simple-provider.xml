@@ -14,11 +14,15 @@
 			port="${http.port}" />
 	</http:listener-config>
 
+<!-- 	<oauth2-provider:config name="OAuth2Provider"
+		providerName="Test OAuth2Provider" resourceOwnerSecurityProvider="resourceOwnerSecurityProvider"
+		clientSecurityProvider="clientSecurityProvider" supportedGrantTypes="${allSupportedGrantTypes}" -->
 	<oauth2-provider:config name="OAuth2Provider"
 		providerName="Test OAuth2Provider" resourceOwnerSecurityProvider="resourceOwnerSecurityProvider"
-		clientSecurityProvider="clientSecurityProvider" supportedGrantTypes="${allSupportedGrantTypes}"
+		clientSecurityProvider="clientSecurityProvider" 
+		supportedGrantTypes="${allSupportedGrantTypes}"
 		listenerConfig="listenerConfig" clientStore="clientObjectStore"
-		scopes="GUEST,USER,ADMIN" defaultScopes="USER">
+		scopes="GUEST,USER,ADMIN,CLIENT,RESOURCE_OWNER" defaultScopes="USER">
 		<oauth2-provider:client-validation-rate-limiter>
 			<oauth2-provider:period-rate-limiter
 				maximumFailureCount="6" />
@@ -28,8 +32,6 @@
 				<oauth2-provider:multiple-refresh-tokens />
 			</oauth2-provider:refresh-token-strategy>
 		</oauth2-provider:token-config>
-		<oauth2-provider:authorization-config
-			loginPage="static/auth.html" authorizationCodeStore="authorizationCodeObjectStore" path="/oauth/authorize"/>
 <!--  		<oauth2-provider:clients>
 			<oauth2-provider:client clientId="client1"
 				clientName="Sanjeev" secret="secret1" 
@@ -88,12 +90,21 @@ output application/java
 attributes.queryParams.scopes default "" splitBy ","]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<logger level="INFO" doc:name="Log vars" doc:id="663e7fce-4967-4a00-a3a1-390b4e5365fb" message="grant_types: #[vars.grantTypes]  scope: #[vars.scopes]" />
-		<oauth2-provider:create-client doc:name="Create client" doc:id="502fc54b-b83e-46e9-9608-26404e9e2a88" config-ref="OAuth2Provider" clientId="#[attributes.queryParams.client_id]" type="CONFIDENTIAL" secret="#[attributes.queryParams.client_secret]" clientName="#[attributes.queryParams.client_name]" authorizedGrantTypes="#[vars.grantTypes]" description="#[attributes.queryParams.client_description]" scopes="#[vars.scopes]" />
+		<ee:transform doc:name="Callback Uris" doc:id="210e8823-ea6b-44d8-994c-50088fac76c1">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="redirect_uris" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.queryParams.redirect_uris default "" splitBy ","]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log vars" doc:id="663e7fce-4967-4a00-a3a1-390b4e5365fb" message="grant_types: #[vars.grantTypes]  scope: #[vars.scopes]  redirect uris: #[vars.redirect_uris]" />
+		<oauth2-provider:create-client doc:name="Create client" doc:id="502fc54b-b83e-46e9-9608-26404e9e2a88" config-ref="OAuth2Provider" clientId="#[attributes.queryParams.client_id]" secret="#[attributes.queryParams.client_secret]" clientName="#[attributes.queryParams.client_name]" authorizedGrantTypes="#[vars.grantTypes]" description="#[attributes.queryParams.client_description]" scopes="#[vars.scopes]" type="CONFIDENTIAL"/>
 	</flow>
 	<flow name="delete-client-flow" doc:id="d40dfbcb-3f73-42c5-9acb-ffe631f8b6b9" >
 		<http:listener doc:name="Listener" doc:id="caf756eb-9a38-49a0-8b13-2ec46ae361e2" config-ref="listenerConfig" path="/delete_client"/>
-		<logger level="INFO" doc:name="Logger" doc:id="cd4970ac-13e0-4089-b236-a81b561d1560" message="#[attributes.queryParams.client_id]"/>
+		<logger level="INFO" doc:name="Log Client Id" doc:id="cd4970ac-13e0-4089-b236-a81b561d1560" message="Client id #[attributes.queryParams.client_id]"/>
 		<oauth2-provider:delete-client doc:name="Delete client" doc:id="ef979fea-3beb-40a8-9ae4-209ad6bf5c74" config-ref="OAuth2Provider" clientId="#[attributes.queryParams.client_id]"/>
 	</flow>
 </mule>

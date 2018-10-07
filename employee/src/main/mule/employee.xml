@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
 http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
-    <http:listener-config name="ems-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081" />
+    <http:listener-config name="employee-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
     </http:listener-config>
-    <apikit:config name="ems-config" raml="ems.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <api-gateway:autodiscovery apiId="15544785" doc:name="API Autodiscovery" doc:id="ff4886b1-d88e-4c26-a277-4d9f819d8304" flowRef="ems-main" />
-	<flow name="ems-main">
-        <http:listener config-ref="ems-httpListenerConfig" path="/api/*">
+    <apikit:config name="employee-config" raml="employee.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <configuration-properties doc:name="Configuration properties" doc:id="db07e66e-bfdf-40af-abb8-166137117549" file="config/config-dev.yaml" />
+	<api-gateway:autodiscovery apiId="15546643" doc:name="API Autodiscovery" doc:id="c56ccdd4-0e15-4e9e-9b46-f450aeeb9c86" flowRef="employee-main" />
+	<flow name="employee-main">
+        <http:listener config-ref="employee-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:response>
@@ -16,7 +17,7 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="ems-config" />
+        <apikit:router config-ref="employee-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
@@ -98,8 +99,8 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="ems-console">
-        <http:listener config-ref="ems-httpListenerConfig" path="/console/*">
+    <flow name="employee-console">
+        <http:listener config-ref="employee-httpListenerConfig" path="/console/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:response>
@@ -108,7 +109,7 @@ output application/json
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:console config-ref="ems-config" />
+        <apikit:console config-ref="employee-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:NOT_FOUND">
                 <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
@@ -125,8 +126,8 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="get:\employees:ems-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="77fce3c6-c0dd-4632-9391-4319d2ea9e60">
+    <flow name="get:\employees:employee-config">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="9ed30d89-4e7a-4460-8293-71becb404795">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -137,7 +138,7 @@ output application/json
     age: 23
   }, 
   {
-    name: "Mik",
+    name: "Mike",
     age: 43
   }
 ]]]></ee:set-payload>

@@ -30,8 +30,8 @@ securitySchemes:
             Bad OAuth request (wrong consumer key, bad nonce, expired timestamp...). Unfortunately,
             re-authenticating the user won't help here.
     settings:
-      authorizationUri: https://github.com/login/oauth/authorize
-      accessTokenUri: https://github.com/login/oauth/access_token
+      authorizationUri: http://oauth2-simple-provider.us-e2.cloudhub.io/oauth/authorize
+      accessTokenUri: http://oauth2-simple-provider.us-e2.cloudhub.io/oauth/token
       authorizationGrants: [authorization_code, password, client_credentials, implicit]
 /employees:
   get:
@@ -42,4 +42,4 @@ securitySchemes:
           application/json:
             example: |
               [{"name":"John","age":23},
-               {"name":"Mik","age":43}]
+               {"name":"Mike","age":43}]
