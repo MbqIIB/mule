@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3c7563d4-d887-4056-bf4d-9610a78fcde3" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="logging-to-fileFlow" doc:id="503ee6f6-4993-47d1-ba98-5ea6bcef490e" >
+		<http:listener doc:name="Listener" doc:id="64aad9b6-3cdf-4808-9464-0637c06cd860" config-ref="HTTP_Listener_config" path="/logging"/>
+		<logger level="INFO" doc:name="Log Mule Home" doc:id="f33d8e22-6a06-44b7-95a3-7dbfcc755733" message="Mule Home is ${MULE_HOME}"/>
+		<logger level="ERROR" doc:name="Log Error" doc:id="4263b67e-4e6a-4d58-b473-529809c8a71c" message="Logging error in flow"/>
+		<logger level="WARN" doc:name="Log Warn" doc:id="ac00cd03-c1fe-4fd6-8be2-f48263e953da" message="Logging warning in program."/>
+		<logger level="INFO" doc:name="Log Info" doc:id="ad859089-6b9c-400d-8c65-a60ab08f0c88" message="Logging info in program"/>
+		<logger level="DEBUG" doc:name="Log Debug" doc:id="54109480-50b8-470b-aca9-555fa5bbe6ee" message="Logging debug message in program"/>
+		<logger level="TRACE" doc:name="Log Trace" doc:id="2fcb72ea-856c-43f0-b1ff-f5c5197efaca" message="Logging trace message in program."/>
+		<ee:transform doc:name="Transform Message" doc:id="407c87d8-912a-4226-b4a3-83dfcb491647" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "successfully logged."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

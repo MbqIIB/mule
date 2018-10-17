@@ -3,22 +3,27 @@
 <mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:spring="http://www.mulesoft.org/schema/mule/spring" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/spring
-        http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	xmlns:spring="http://www.mulesoft.org/schema/mule/spring" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+		http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd
+		http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+		http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4dbc4581-84e9-46dc-a98f-eb4a15973a50" >
 		<http:listener-connection host="localhost" port="8081" />
 	</http:listener-config>
+	
 	 <spring:config name="springConfig" files="beans.xml" doc:id="8623553f-16f6-45d9-acef-e23764e05bf8" />
 
 	<db:config name="dbConfig" doc:name="Database Config" doc:id="e3c8c9ee-660a-4940-81d1-2f3625adb6bf" >
 		<db:data-source-connection dataSourceRef="dataSource" />
 	</db:config>
+	
 	<flow name="spring-module-db-exampleFlow" doc:id="e34d3a8b-6fdc-44c3-8fe8-f48b40a9fba6" >
-		<http:listener doc:name="Listener" doc:id="72f93023-d421-48f5-b09b-7480a734e32a" config-ref="HTTP_Listener_config" path="/book"/>
+		<http:listener doc:name="Listener" doc:id="72f93023-d421-48f5-b09b-7480a734e32a" 
+		config-ref="HTTP_Listener_config" path="/book"/>
 		<db:select doc:name="Select" doc:id="6bff6c64-6776-4eb0-bf2c-f16e38cffcf3" config-ref="dbConfig">
 			<db:sql >select * from books</db:sql>
 		</db:select>
