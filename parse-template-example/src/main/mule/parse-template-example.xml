@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="dff72866-a680-4f37-8354-942a3ca29673" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="05add76d-2fe3-4f8c-b4f1-bc7a98479577" >
+		<db:my-sql-connection port="${db.port}" host="${db.server}" user="${db.user}" password="${db.password}" database="${db.database}"/>
+	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="a304b2ba-a121-423e-8632-7ad19f8f34e6" file="config/config-dev.yaml" />
+	<flow name="parse-template-exampleFlow" doc:id="a5001d47-2fb9-4a2c-b679-0b54de08193e" >
+		<http:listener doc:name="HTTP  Listener" doc:id="53d5f5e6-4ab7-4307-8e0d-a5371a5a71ba" config-ref="HTTP_Listener_config" path="/getBook" allowedMethods="GET">
+			<http:response >
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "text/html"
+}]]]></http:headers>
+			</http:response>
+		</http:listener>
+		<set-variable value="#[attributes.queryParams.bookId]" doc:name="Set Variable Id" doc:id="f8fad235-5569-41e5-956e-4e8698a884eb" variableName="bookId" />
+		<db:select doc:name="Retreive Book" doc:id="3b70426c-397c-4d3b-a2fd-5a3c710f72c6" config-ref="Database_Config">
+			<db:sql >select * from book where id=:id</db:sql>
+			<db:input-parameters ><![CDATA[#[{ 'id' :  attributes.queryParams.bookId}]
+]]></db:input-parameters>
+		</db:select>
+		<logger level="INFO" doc:name="Logger" doc:id="5dc47e1c-ac7f-4d16-88ec-0c82d9b9e1b9" message="#[vars.bookId]"/>
+		<parse-template doc:name="Book Template" doc:id="f94e4dfd-0eed-4c5a-bab6-cba52ff7f3c4" location="F:\projects\mulesoft\mule\parse-template-example\src\main\resources\template\book.template"/>
+	</flow>
+</mule>

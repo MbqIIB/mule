@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Book</title>
+</head>
+	<body>
+	<div><h4>Book detail of book id:#[vars.bookId]</h4></div>
+		<table border=4>
+		<tr>
+			<th>Title</th>
+			<th>Author</th>
+			<th>Publication Year</th>
+			<th>Price</th>
+		</tr>
+
+		<tr>
+			<td>#[payload[0]['title']]</td>
+			<td>#[payload[0]['author']]</td>
+			<td>#[payload[0]['pub_year']]</td>
+			<td>#[payload[0]['price']]</td>
+		</tr>
+		</table>
+
+	</body>
+</html>
+
