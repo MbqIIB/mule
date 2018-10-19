@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+
+	<flow name="first-successful-routerFlow" doc:id="2a162c6f-06bd-4938-8fce-d9206de7cf4b" >
+		<scheduler doc:name="Scheduler" doc:id="38953956-3f5d-4979-a46f-140375dd9ce9" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="2" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<first-successful doc:name="First Successful" doc:id="4f4d9ab0-a4d9-4532-a475-81756ffca2b6" >
+			<route >
+				<file:read doc:name="Read non existent file" doc:id="83f1ec93-7a59-497e-9a99-6acaf4ba064b" path="nonExistentFile" />
+				<set-variable value="1" doc:name="Set successfulRoute var to route 1" doc:id="9f8580bb-72cb-4c6e-b8ab-d521b2ad23d6" variableName="successfulRoute"/>
+			</route>
+			<route >
+				<set-payload value="#[vars.nonExistentVar!]" doc:name="Set Payload with non existent variable" doc:id="0961b33d-dce4-4a89-afc0-e02b94eacc60" />
+				<set-variable value="2" doc:name="Set successfulRoute var to route 2" doc:id="b762968d-4bc7-41d1-b971-0c6833aa840a" variableName="successfulRoute"/>
+			</route>
+			<route >
+				<set-variable value="3" doc:name="Set successfulRoute var to route 3" doc:id="d21ffe2e-f923-4d22-a540-553ba455f362" variableName="successfulRoute"/>
+			</route>
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="0b0bb1df-e357-44ae-a937-80643c086f37" message="This route is never going to be executed"/>
+			</route>
+		</first-successful>
+		<logger level="ERROR" doc:name="Logger" doc:id="7dd0e331-4ee0-47da-b132-f34016512106" message="#['Successful route was $(vars.successfulRoute)']"/>
+	</flow>
+</mule>
