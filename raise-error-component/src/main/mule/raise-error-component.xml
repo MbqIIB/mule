@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0fad1656-2300-4f9f-b67c-e6fb780ea875" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="raise-error-example-flow">
+
+			
+		<http:listener doc:name="Listener" doc:id="170f8165-242c-418d-9adb-40af0d94298b" config-ref="HTTP_Listener_config" path="/raise_error" doc:description="http://localhost:8081/raise_error?balance=4000"/>
+<!-- 		<http:request url="https://unsecurebank.com/balance"
+			target="balance" /> -->
+		<ee:transform doc:name="Transform Message" doc:id="58db9189-834d-4cf1-b7c5-3be31c6ebfde" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	amount : 5000
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		
+		<set-variable value="#[attributes.queryParams.balance]" doc:name="Set Variable" doc:id="9aaf6575-add1-415a-906c-60732e383779" variableName="balance"/>
+		<choice>
+			<when expression="#[payload.amount &gt; vars.balance]">
+				<logger level="INFO" doc:name="Logger" doc:id="735f0bf4-e027-491d-87d8-6f7d9443eb6f" message="amount: #[payload.amount]"/>
+				<raise-error type="ACCOUNT:INSUFFICIENT_FUNDS"
+					description="#['Cannot transfer $(payload.amount) since only $(vars.balance) are available.']" />			
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="14950275-aa67-47c4-b885-fa4437a023a0" message="Transfer can be done"/>
+			</otherwise>		
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="adaef1c4-fa0e-4efc-9d01-9f01e451bb41" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Transfer successful."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<!-- <http:request url="https://unsecurebank.com/transfer" /> -->
+	
+</flow>
+
+</mule>
