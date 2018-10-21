@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="round-robin-routerFlow" doc:id="6a593423-a2d6-4162-920b-5d1f87cd2a26" >
+		<scheduler doc:name="Scheduler" doc:id="e4e8dbf8-6ecf-43ab-9ca4-fd8e3d7bdf25" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="2" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<round-robin doc:name="Round Robin" doc:id="ed006008-ec02-4e74-b057-8b8b280877ca" >
+			<route >
+				<logger level="ERROR" doc:name="Logger" doc:id="18b8ea7e-4fb5-42b7-a496-7798b4713d7c" message="Route one executed."/>
+			</route>
+			<route >
+				<logger level="ERROR" doc:name="Logger" doc:id="5de2fb83-3c59-4c17-b5b5-b0ff75d1b456" message="Route two executed."/>
+			</route>
+		</round-robin>
+		<logger level="INFO" doc:name="Logger" doc:id="b1524c94-6e11-4723-92f9-57afb3e41962" message="Execution ending."/>
+	</flow>
+
+</mule>
