@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:calculator="http://www.mulesoft.org/schema/mule/calculator" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/calculator http://www.mulesoft.org/schema/mule/calculator/current/mule-calculator.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="45f459df-9866-406d-90e7-cdbc6303ed93" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="sdk-calculator-connectorFlow" doc:id="4d5ab288-32b6-4f06-a99c-93e42e965418" >
+		<http:listener doc:name="Listener" doc:id="b186de8d-e1f1-4aad-892f-c474dcd5f4b2" config-ref="HTTP_Listener_config" path="/calc" doc:description="http://localhost:8081/calc?person=sanjeev&amp;v1=15&amp;v2=4&amp;action=SUBSTRACT"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e96037bc-6de0-4a6a-b402-0a2e1411af81" />
+		<set-variable value="#[attributes.queryParams.v1]" doc:name="Set Variable" doc:id="6e440937-dbf7-4868-9494-93446fc3cdc1" variableName="v1"/>
+		<set-variable value="#[attributes.queryParams.v2]" doc:name="Set Variable" doc:id="eefd048a-7127-46c3-abe5-677977ba1bc5" variableName="v2"/>
+		<set-variable value="#[attributes.queryParams.action]" doc:name="Set Variable" doc:id="64a00f21-0f63-4ab2-b544-9cb07686df56" variableName="action"/>
+		<calculator:say-hi doc:name="Greet" doc:id="08d24499-2444-48fe-9b59-e2b875fde3fe" person="#[attributes.queryParams.person]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0051dd20-ad5a-4362-ab34-8bba3787699e" message="greet: #[payload]"/>
+		<calculator:calculate doc:name="calc" doc:id="2a4d3820-f07f-4a98-b397-ef31795f132f" action="#[vars.action]" v1="#[vars.v1]" v2="#[vars.v2]"/>
+		
+		<ee:transform doc:name="Transform Message" doc:id="632d3f2f-c3d4-42ae-bf8d-72ac47f5f86c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

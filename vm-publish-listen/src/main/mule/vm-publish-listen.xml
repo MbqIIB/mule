@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0df72c2e-c22b-4189-befd-58e538662b3e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="2260a8fe-7b6b-40ea-8c42-c9a06953d366" >
+		<vm:queues >
+			<vm:queue queueName="myQueue" />
+		</vm:queues>
+	</vm:config>
+	<flow name="vm-publish-listenFlow" doc:id="8d0feab7-6b6d-4be5-87a2-44310e92d7d7" >
+		<http:listener doc:name="Listener" doc:id="45d29d24-5890-4fb0-8ea0-772783140052" config-ref="HTTP_Listener_config" path="/vm" allowedMethods="POST"/>
+		<vm:publish queueName="myQueue" doc:name="Publish" doc:id="ae5acfe5-7f90-47f2-8648-f6e554149b6e" config-ref="VM_Config">
+			<vm:content ><![CDATA[#[payload.body]]]></vm:content>
+		</vm:publish>
+		<ee:transform doc:name="Transform Message" doc:id="4ab3a37b-1c67-4552-a399-6a61f64f29ef" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "message published and will be processed NRT"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="vm-listenFlow" doc:id="b1e0aa2e-fcfc-417f-baab-123cc90ba3c3" >
+		<vm:listener queueName="myQueue" doc:name="Listener" doc:id="a2c53ca6-b3bc-4530-a2d2-ceee1758edfe" config-ref="VM_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="80c03c65-8249-42f8-b96a-f3d99b5ba123" message="Message recieved is : #[payload]"/>
+	</flow>
+</mule>

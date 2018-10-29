@@ -1,0 +1,8 @@
+<body>
+	<student>
+		<id>1000</id>
+		<name>Archer</name>
+		<hobby>Music</hobby>
+		<age>12</age>
+	</student>
+</body>

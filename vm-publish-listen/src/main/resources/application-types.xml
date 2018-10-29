@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="mjson" format="json">
+      <types:shape format="weave" example="examples/message.json"><![CDATA[%dw 2.0
+type mjson = {|
+  body: {|
+    Id: Number {"typeId": "int"}, 
+    Name: String, 
+    Hobby: String, 
+    Age: Number {"typeId": "int"}
+  |}
+|} {"MetadataFormat": "json",
+"example": "{\"body\":{\"Id\":1000,\"Name\":\"Archer\",\"Hobby\":\"Music\",\"Age\":12}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="mxml" format="xml">
+      <types:example format="xml" element="body" location="examples/message.xml"/>
+    </types:type>
+  </types:catalog>
+</types:mule>

@@ -1,0 +1,19 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:calculator="http://www.mulesoft.org/schema/mule/calculator"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/calculator http://www.mulesoft.org/schema/mule/calculator/current/mule-calculator.xsd">
+
+    <calculator:config name="config" configId="configId">
+        <calculator:connection requiredParameter="aValue" />
+    </calculator:config>
+
+    <flow name="sayHiFlow">
+        <calculator:say-hi person="Mariano Gonzalez"/>
+    </flow>
+
+    <flow name="retrieveInfoFlow">
+        <calculator:retrieve-info config-ref="config"/>
+    </flow>
+
+</mule>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:bti="http://www.mulesoft.org/schema/mule/ee/bti"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/bti http://www.mulesoft.org/schema/mule/ee/bti/current/mule-bti-ee.xsd">
+	<bti:transaction-manager/>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="184df0e4-f54c-42af-aa3a-ae522117d5f2" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="6830d2e7-62a7-4e42-be91-75dd09e127fc" >
+		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.database}" />
+	</db:config>
+	<vm:config name="VM_Config" doc:name="VM Config" doc:id="5ae29e4a-adc0-4aea-9f4e-2788ec934e13" >
+		<vm:queues >
+			<vm:queue queueName="myQueue" />
+		</vm:queues>
+	</vm:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="514d1219-a3e7-4287-9542-71b93d89f458" file="config/config-dev.yaml" />
+	<flow name="transaction-try-scopeFlow" doc:id="d1387cf6-8b0a-4399-b571-2e7c90421e8a" >
+		<http:listener doc:name="Listener" doc:id="c0b3c4fc-9970-43ab-ac7e-baa223f81430" config-ref="HTTP_Listener_config" path="/transaction"/>
+		<try doc:name="Try" doc:id="db3dc4d9-aac2-4993-82a6-82a4d8f31b6f" transactionalAction="ALWAYS_BEGIN" transactionType="XA">
+			<db:insert doc:name="Insert" doc:id="eab513b6-aeb6-4da0-881d-9f9a6a0f3fd6" config-ref="Database_Config">
+			<db:sql>INSERT INTO employee values(:first_name, :last_name, :gender, :dob,  :hire_date);</db:sql>
+			<db:input-parameters><![CDATA[ #[{'first_name' : 'Michael', 'last_name': 'Thomson Jr',  'gender' : 'F', 'dob': '2001-08-15', 'hire_date': '2018-05-19'}]]]></db:input-parameters>
+		</db:insert>
+			<ee:transform doc:name="Transform Message" doc:id="cdc29b5c-490f-4ab1-ad96-a4464202ac3b">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="02266f3d-91b7-41df-ac7e-388804d9a605" message="#[payload]" />
+			<vm:publish queueName="myQueue" doc:name="Publish" doc:id="890530f0-3849-492c-b40d-759351b8b1c1" config-ref="VM_Config" transactionalAction="ALWAYS_JOIN"/>
+		</try>
+	</flow>
+	<flow name="transaction-try-scopeFlow1" doc:id="178903f6-f472-4c8e-a26f-6639aa6d538e" >
+		<vm:listener queueName="myQueue" doc:name="Listener" doc:id="e87dee3b-facc-4a1e-b3b1-810101c8e43d" config-ref="VM_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2f7a0c78-fe92-486a-9818-c1382bd75dd6" message="#[payload]"/>
+	</flow>
+</mule>

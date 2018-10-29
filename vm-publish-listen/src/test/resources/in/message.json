@@ -1,0 +1,10 @@
+{
+	"body": {
+		"student" : {
+			"id": 1000,
+			"name": "Archer",
+			"hobby": "Music",
+			"age": 12
+		}
+	}
+}
