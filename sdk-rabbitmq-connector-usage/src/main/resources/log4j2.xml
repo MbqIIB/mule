@@ -9,8 +9,8 @@
         see them in the mule_ee.log file. -->
 
     <Appenders>
-        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}sdk-greet-connector.log" 
-                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}sdk-greet-connector-%i.log">
+        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}sdk-rabbitmq-connector-usage.log" 
+                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}sdk-rabbitmq-connector-usage-%i.log">
             <PatternLayout pattern="%-5p %d [%t] [event: %X{correlationId}] %c: %m%n" />
             <SizeBasedTriggeringPolicy size="10 MB" />
             <DefaultRolloverStrategy max="10"/>
@@ -22,7 +22,9 @@
         <!--AsyncLogger name="org.mule.service.http.impl.service.HttpMessageLogger" level="DEBUG" /-->
         <AsyncLogger name="org.mule.service.http" level="WARN"/>
         <AsyncLogger name="org.mule.extension.http" level="WARN"/>
-    
+        <AsyncLogger name="com.laxtech.extn.rabbitmq" level="DEBUG">
+        	<AppenderRef ref="file" />
+        </AsyncLogger>
 		<!-- Mule logger -->        
         <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="INFO"/>
  

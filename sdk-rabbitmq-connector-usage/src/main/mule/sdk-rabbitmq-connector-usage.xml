@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:rabbitmq="http://www.mulesoft.org/schema/mule/rabbitmq" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/rabbitmq http://www.mulesoft.org/schema/mule/rabbitmq/current/mule-rabbitmq.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="c023d050-3a8e-48fd-9f42-4281b533f647" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<rabbitmq:config name="Rabbitmq_Config" doc:name="Rabbitmq Config" doc:id="3d209c8e-e8a0-4a30-bb00-8457c02e1d77" configId="cid2" >
+		<rabbitmq:connection queueName="muleAppQueue" />
+	</rabbitmq:config>
+	<flow name="sdk-rabbitmq-connector-usageFlow" doc:id="2f4befd4-59fe-43f5-b197-5862f34ad10c" >
+		<http:listener doc:name="Listener" doc:id="ea77cee7-e8cb-45f8-b8b3-12b8e72908df" config-ref="HTTP_Listener_config" path="/rmqc"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="10571e3a-ee35-4647-943d-b6a0a1c6ebd5" mimeType="text/plain"/>
+		<rabbitmq:publish doc:name="Publish Employee Detail" doc:id="4afbe831-df58-4f16-8bd4-94433ef6ef89" config-ref="Rabbitmq_Config" message="#[payload]"/>
+	</flow>
+
+	
+	
+</mule>

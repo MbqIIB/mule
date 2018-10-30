@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.mycompany</groupId>
-	<artifactId>sdk-greet-connector</artifactId>
+	<artifactId>sdk-rabbitmq-connector-usage</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 
-	<name>sdk-greet-connector</name>
+	<name>sdk-rabbitmq-connector-usage</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -44,10 +44,9 @@
 			<version>1.1.1</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
-
 		<dependency>
 			<groupId>com.laxtech</groupId>
-			<artifactId>greet-connector</artifactId>
+			<artifactId>rabbitmq-connector</artifactId>
 			<version>1.0.0</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
