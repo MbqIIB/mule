@@ -1,0 +1,19 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:jaxb="http://www.mulesoft.org/schema/mule/jaxb"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/jaxb http://www.mulesoft.org/schema/mule/jaxb/current/mule-jaxb.xsd">
+<!-- 
+    <jaxb:config name="config" configId="configId">
+        <jaxb:connection requiredParameter="aValue" />
+    </jaxb:config>
+
+    <flow name="sayHiFlow">
+        <jaxb:say-hi person="Mariano Gonzalez"/>
+    </flow>
+
+    <flow name="retrieveInfoFlow">
+        <jaxb:retrieve-info config-ref="config"/>
+    </flow> -->
+
+</mule>

@@ -13,7 +13,9 @@ http://www.mulesoft.org/schema/mule/greeting-extn http://www.mulesoft.org/schema
 	</greeting-extn:config>
 	<flow name="greeting.extn.usageFlow" doc:id="b21c284f-8c3a-42a0-8ad2-c2c9e7042c1d" >
 		<http:listener doc:name="Greeting Usage Listener" doc:id="0507c883-fc61-422b-adaf-746b49789a25" config-ref="HTTP_Listener_config" path="/greeting/*"/>
+		<logger level="INFO" doc:name="Logger" doc:id="33723333-5828-4bc6-afe5-b2a0421eeadc" message="#[payload]"/>
 		<greeting-extn:say-hi doc:name="Greet" doc:id="32690432-4e97-4695-94ae-8fa98beee194" person="#[attributes.queryParams.person]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5208f8f6-17e1-4b64-bd20-0c80d65b9455" message="#[payload]"/>
 	</flow>
 	<flow name="greeting.extn.usageFlow1" doc:id="73afff91-7fe3-4841-8d04-8bb482ba9ee7" >
 		<http:listener doc:name="Listener" doc:id="643f96d8-f0e3-49dc-98d2-8f1f94ff7fe6" config-ref="HTTP_Listener_config" path="/retrieve_info"/>

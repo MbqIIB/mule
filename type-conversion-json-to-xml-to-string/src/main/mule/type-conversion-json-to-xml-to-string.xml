@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:rabbitmq="http://www.mulesoft.org/schema/mule/rabbitmq" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/rabbitmq http://www.mulesoft.org/schema/mule/rabbitmq/current/mule-rabbitmq.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1338564a-8c49-4633-a0c0-391a28f26a6d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<rabbitmq:config name="Rabbitmq_Config" doc:name="Rabbitmq Config" doc:id="cefd3626-e39c-4103-a00f-3ee7ef99e26a" configId="c4ew3">
+		<rabbitmq:connection queueName="muleAppQueue" />
+	</rabbitmq:config>
+	<flow name="type-conversion-json-to-xml-to-stringFlow" doc:id="358b72f9-0a2e-4ce3-a413-756d2a04d3ec" >
+		<http:listener doc:name="Listener" doc:id="df8f879e-6c86-48f9-ab4f-03c19e455ff9" config-ref="HTTP_Listener_config" path="/tc1" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message Json to Xml" doc:id="7f1fa0c9-4f3e-4d0c-b1ee-2145925b7346" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml  encoding="UTF-8"
+---
+{
+	envalope: {
+		employee: {
+			department: {
+				id: payload.employee.department.id,
+				name: payload.employee.department.name
+			},
+			firstName: payload.employee.firstName,
+			id: payload.employee.id,
+			lastName: payload.employee.firstName,
+			salary: payload.employee.department.id * 1000
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message to String" doc:id="08a12852-5549-4636-a7dd-3f6a8399f4e7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+write(payload, "application/xml", {"encoding":"UTF-8"})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<rabbitmq:publish doc:name="Publish" doc:id="44523caa-91ff-444b-8f18-94daedbbd3a3" config-ref="Rabbitmq_Config" message="#[payload]"/>
+	</flow>
+	
+		<flow name="type-conversion-json-to-xml-to-string_method2" doc:id="0ba6a770-42b9-465b-9cab-3a6cc839d06b" >
+		<http:listener doc:name="Listener" doc:id="43b60578-5039-476f-b565-d5737782dc1f" config-ref="HTTP_Listener_config" path="/tc2" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message Json to Xml" doc:id="96a9a290-7edb-4cbd-8b17-a022fd1598f2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml  encoding="UTF-8"
+---
+{
+	envalope: {
+		employee: {
+			department: {
+				id: payload.employee.department.id,
+				name: payload.employee.department.name
+			},
+			firstName: payload.employee.firstName,
+			id: payload.employee.id,
+			lastName: payload.employee.firstName,
+			salary: payload.employee.department.id * 1000
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="5cedc4f2-b30f-4e2d-8440-45dcb5c66d2e" mimeType="text/plain"/>
+		<ee:transform doc:name="Transform Message to String. This is not required." doc:id="86cc37a3-793e-43e5-b6be-307bff7fd6be" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload as String]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<rabbitmq:publish doc:name="Publish" doc:id="ae4ff24c-5a7f-495b-ab09-69b50f4e1928" config-ref="Rabbitmq_Config" message="#[payload]"/>
+	</flow>
+	
+		
+		<flow name="type-conversion-json-to-xml-to-string_method3" doc:id="8715826f-4753-404e-bf3a-dace86a1c10d" >
+		<http:listener doc:name="Listener" doc:id="d00f8a15-0127-44da-a8d4-10ed4aec6b52" config-ref="HTTP_Listener_config" path="/tc3" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message Json to Xml" doc:id="ab0a5a0f-0b54-4e77-b44b-85bfadf3f7fe" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml  encoding="UTF-8"
+---
+{
+	envalope: {
+		employee: {
+			department: {
+				id: payload.employee.department.id,
+				name: payload.employee.department.name
+			},
+			firstName: payload.employee.firstName,
+			id: payload.employee.id,
+			lastName: payload.employee.firstName,
+			salary: payload.employee.department.id * 1000
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="9cb0aff1-cec7-447f-b51e-8c27118ab55e" mimeType="text/plain"/>
+		<rabbitmq:publish doc:name="Publish" doc:id="b806ff86-dd65-452c-b718-dc47dcb2ba22" config-ref="Rabbitmq_Config" message="#[payload]"/>
+	</flow>
+	
+		
+		<flow name="type-conversion-json-to-xml-to-string_method4" doc:id="cc108a82-b733-4bbb-a46e-a4e72c4f1117" >
+		<http:listener doc:name="Listener" doc:id="1501f4cc-0d1a-48c0-b5fd-b99bbd851ab4" config-ref="HTTP_Listener_config" path="/tc4" allowedMethods="POST"/>
+		<ee:transform doc:name="This is not working. TODO combine to xml to string" doc:id="775d86a5-857d-4a6c-96be-75313d31e703" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+{
+	envalope: {
+		employee: {
+			department: {
+				id: payload.employee.department.id,
+				name: payload.employee.department.name
+			},
+			firstName: payload.employee.firstName,
+			id: payload.employee.id,
+			lastName: payload.employee.firstName,
+			salary: payload.employee.department.id * 1000
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<rabbitmq:publish doc:name="Publish" doc:id="63064871-7270-408a-a599-9ec8ea032c6c" config-ref="Rabbitmq_Config" message="#[payload]"/>
+	</flow>
+</mule>

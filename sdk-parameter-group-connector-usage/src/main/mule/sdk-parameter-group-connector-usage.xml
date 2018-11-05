@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:parameter-group="http://www.mulesoft.org/schema/mule/parameter-group" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/parameter-group http://www.mulesoft.org/schema/mule/parameter-group/current/mule-parameter-group.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3ce8b581-e7c3-4d80-bc12-9a0ea158c51b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<parameter-group:config name="Parameter_Group_Config" doc:name="Parameter Group Config" doc:id="8cdff187-7941-42d6-8d79-b3a89d3a917d" configId="c1b1" >
+		<parameter-group:connection soapVersion="11" host="localhost" />
+	</parameter-group:config>
+	<flow name="sdk-parameter-group-connector-usageFlow" doc:id="ace15a98-8a52-4853-ab08-69e3d4de259a" >
+		<http:listener doc:name="Listener" doc:id="e9a3b141-869f-4182-ac7d-5808a05dd164" config-ref="HTTP_Listener_config" path="/pg"/>
+		<parameter-group:get-employee doc:name="Get employee" doc:id="74efb379-99dd-43c4-b675-b6eafa97ce8a" config-ref="Parameter_Group_Config"/>
+	</flow>
+</mule>

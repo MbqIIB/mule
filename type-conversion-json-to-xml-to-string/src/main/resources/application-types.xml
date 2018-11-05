@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="employeeJSONType" format="json">
+      <types:shape format="weave" example="examples/example.json"><![CDATA[%dw 2.0
+type employeeJSONType = {|
+  employee: {|
+    department: {|
+      id: Number {"typeId": "int"}, 
+      name: String
+    |}, 
+    firstName: String, 
+    id: Number {"typeId": "int"}, 
+    lastName: String
+  |}
+|} {"MetadataFormat": "json",
+"example": "{\"employee\":{\"department\":{\"id\":101,\"name\":\"IT\"},\"firstName\":\"James\",\"id\":1,\"lastName\":\"Waller\"}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="employeeXmlEnvType" format="xml">
+      <types:example format="xml" element="envalope" location="examples/exmployee_env.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#7f1fa0c9-4f3e-4d0c-b1ee-2145925b7346">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="employeeJSONType"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="employeeXmlEnvType"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#96a9a290-7edb-4cbd-8b17-a022fd1598f2">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="employeeJSONType"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="employeeXmlEnvType"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:module-hello="http://www.mulesoft.org/schema/mule/module-hello" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/module-hello http://www.mulesoft.org/schema/mule/module-hello/current/mule-module-hello.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a02055bd-28f5-4f12-847a-919ec4c9d74b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="xml-sdk-hello-usageFlow" doc:id="421df3d3-59a5-4de9-90d0-e57371d8c48d" >
+		<http:listener doc:name="Listener" doc:id="c8c3da40-5a04-474c-ac95-1f6df4d0e4c5" config-ref="HTTP_Listener_config" path="/xmlsdkhello"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4e175a1e-e741-4933-88e1-e4ee741b8b8c" />
+		<module-hello:set-payload-hardcoded doc:name="Set payload hardcoded" doc:id="ef19f162-d889-4450-b868-71cf483179e1" />
+	</flow>
+	<flow name="xml-sdk-hello" doc:id="7f8cc37c-81fc-414f-96b8-c1a28117f2cd" >
+		<http:listener doc:name="Listener" doc:id="60bf5b13-b582-4cd0-b1fc-5b8b296097a3" config-ref="HTTP_Listener_config" path="/xmlsdkecho" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e312fcf6-7565-4579-8554-3b0d4862fdca" />
+		<module-hello:set-payload-echo doc:name="Set payload echo" doc:id="969af8e7-982b-473d-8e81-ac9f623aaedf" inputParam="#[payload]"/>
+	
+</flow>
+</mule>

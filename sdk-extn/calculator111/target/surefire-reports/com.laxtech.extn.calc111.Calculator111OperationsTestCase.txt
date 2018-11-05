@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.laxtech.extn.calc111.Calculator111OperationsTestCase
--------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 60.734 s - in com.laxtech.extn.calc111.Calculator111OperationsTestCase

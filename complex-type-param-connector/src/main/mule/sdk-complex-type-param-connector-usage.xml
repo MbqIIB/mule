@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:complex-type-parameter="http://www.mulesoft.org/schema/mule/complex-type-parameter" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/complex-type-parameter http://www.mulesoft.org/schema/mule/complex-type-parameter/current/mule-complex-type-parameter.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f0b82a39-15ae-48d6-8c75-78baa5fe32f8" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<complex-type-parameter:config name="Complex_type_parameter_Config" doc:name="Complex-type-parameter Config" doc:id="30b13bc1-6fb1-4adb-bd67-2825588f64ea" configId="c12" >
+		<complex-type-parameter:connection dbName="books" bufferSize="10" requiredParameter="emp"/>
+		<complex-type-parameter:options color="BLUE" mode="DARK"/>
+	</complex-type-parameter:config>
+
+
+	
+	<flow name="complex-type-param-connectorFlow" doc:id="f2a05411-8d6a-49ad-ab35-b429eb1d8855" >
+		<http:listener doc:name="Listener" doc:id="8bf1cd9b-96f0-417f-b0d1-1b7d7ae0fd5a" config-ref="HTTP_Listener_config" path="/empinfo"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4fe793ff-54c3-4ad1-b470-224a15694860" />
+		<complex-type-parameter:say-hi doc:name="Say hi" doc:id="5c9cf9de-6835-4f35-abb0-f42e580fc5a8" person="Sanjeev"/>
+		<complex-type-parameter:get-employee-info-info doc:name="Retrieve employee info" doc:id="2293b613-c428-45ed-a228-268959d1b94e" />
+	</flow>
+</mule>

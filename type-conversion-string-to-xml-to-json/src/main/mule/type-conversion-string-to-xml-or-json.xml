@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7bc7afb4-28a6-47df-8335-166d4aaa5007" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="type-conversion-string-to-xmlFlow" doc:id="b410fa73-dd62-4ea1-a7f5-4ab96e64c127" >
+		<http:listener doc:name="Listener" doc:id="305970bc-460e-4bb9-9733-db0243ce1128" config-ref="HTTP_Listener_config" path="/tc" doc:description='type employee = Object { class: "com.laxtech.entity.Employee"}
+---
+payload as employee'/>
+		<set-payload doc:name="Set String Payload" doc:id="72ed5b35-7ec0-450f-9ce6-7401a028965f" value='&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&lt;employee&gt;
+    &lt;department&gt;
+        &lt;id&gt;101&lt;/id&gt;
+        &lt;name&gt;IT&lt;/name&gt;
+    &lt;/department&gt;
+    &lt;firstName&gt;James&lt;/firstName&gt;
+    &lt;id&gt;1&lt;/id&gt;
+    &lt;lastName&gt;Waller&lt;/lastName&gt;
+    &lt;salary&gt;1050&lt;/salary&gt;
+&lt;/employee&gt;' />
+		<set-payload value="#[payload]" doc:name="Set Payload mime type to xml" doc:id="6689ea39-1d89-4fca-ba42-fbdcb35e4a2e" mimeType="application/xml"/>
+		<ee:transform doc:name="Set encoding" doc:id="28b7d38c-697b-4816-8dc4-496825635e90" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml encoding="UTF-8"
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="type-conversion-string-to-xml" doc:id="5235856e-0ce5-4f58-9d19-b7b7fae9be3c" >
+		<http:listener doc:name="Listener" doc:id="f557cc6a-ab21-4ca7-bac8-0834d4213723" config-ref="HTTP_Listener_config" path="/tc1" doc:description='type employee = Object { class: "com.laxtech.entity.Employee"}
+---
+payload as employee'/>
+		<set-payload doc:name="Set String Payload" doc:id="eddefcfe-a730-4612-b429-4d36fbdd1538" value='&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&lt;employee&gt;
+    &lt;department&gt;
+        &lt;id&gt;101&lt;/id&gt;
+        &lt;name&gt;IT&lt;/name&gt;
+    &lt;/department&gt;
+    &lt;firstName&gt;James&lt;/firstName&gt;
+    &lt;id&gt;1&lt;/id&gt;
+    &lt;lastName&gt;Waller&lt;/lastName&gt;
+    &lt;salary&gt;1050&lt;/salary&gt;
+&lt;/employee&gt;' />
+		<set-payload value="#[payload]" doc:name="Set Payload mime type to xml" doc:id="9ce0cb34-8136-45e0-99cd-99961c7352b9" mimeType="application/xml"/>
+	</flow>
+		<flow name="type-conversion-string-to-xml-to-json" doc:id="1f68640d-eebb-466e-b85b-d44df9586d22" >
+		<http:listener doc:name="Listener" doc:id="bd927cf1-dac4-4c0e-a1ae-50d746617091" config-ref="HTTP_Listener_config" path="/tc2" doc:description='type employee = Object { class: "com.laxtech.entity.Employee"}
+---
+payload as employee'/>
+		<set-payload value='&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;
+&lt;employee&gt;
+    &lt;department&gt;
+        &lt;id&gt;101&lt;/id&gt;
+        &lt;name&gt;IT&lt;/name&gt;
+    &lt;/department&gt;
+    &lt;firstName&gt;James&lt;/firstName&gt;
+    &lt;id&gt;1&lt;/id&gt;
+    &lt;lastName&gt;Waller&lt;/lastName&gt;
+    &lt;salary&gt;1050&lt;/salary&gt;
+&lt;/employee&gt;' doc:name="Set Payload" doc:id="0e30295b-74d6-430f-a443-1ff264250160"/>
+		<set-payload value="#[payload]" doc:name="Set Payload mime type to xml" doc:id="f1647eaa-1dd1-4b50-be2b-9d8f779f5af6" mimeType="application/xml"/>
+		<ee:transform doc:name="Transform Message to JSON" doc:id="80a352f7-f666-46e8-b2a6-f6b3e265f09f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

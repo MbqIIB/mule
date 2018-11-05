@@ -1,0 +1,12 @@
+<envalope>
+	<employee>
+		<department>
+			<id>101</id>
+			<name>IT</name>
+		</department>
+		<firstName>James</firstName>
+		<id>1</id>
+		<lastName>Waller</lastName>
+		<salary>50000</salary>
+	</employee>
+</envalope>

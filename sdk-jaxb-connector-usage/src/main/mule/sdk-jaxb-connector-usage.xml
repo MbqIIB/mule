@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jaxb="http://www.mulesoft.org/schema/mule/jaxb" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/jaxb http://www.mulesoft.org/schema/mule/jaxb/current/mule-jaxb.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9c007718-45ea-4534-a5c4-8432ad04ef85" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<jaxb:config name="Jaxb_Config" doc:name="Jaxb Config" doc:id="261d3ec7-b2c1-43cf-bf01-497e92cc8de5" configId="kid4" />
+	<flow name="sdk-jaxb-connector-usageFlow" doc:id="6bce6dc5-7515-4f14-99bc-f9234e5d1074" >
+		<http:listener doc:name="Listener" doc:id="2fee558e-b984-4733-b512-e53a19a43d78" config-ref="HTTP_Listener_config" path="/jaxb" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="25b2dc25-bca4-4c27-a2d6-a1c871068779" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml encoding = "UTF-8"
+---
+{
+	employee: {
+		department: {
+			id: payload.employee.department.id,
+			name: payload.employee.department.name
+		},
+		firstName: payload.employee.firstName,
+		id: payload.employee.id,
+		lastName: payload.employee.lastName,
+		salary: payload.employee.id * 1000
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="fe2c51fe-c51d-4482-8a5e-42d2aa510d04" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+write(payload, "application/xml", {"encoding":"UTF-8"})
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<jaxb:publish doc:name="Publish" doc:id="77cad50e-f412-420c-95fd-9cf5e5b2b600" config-ref="Jaxb_Config" message="#[payload]"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="16329e18-23a3-402d-80a0-56cee89eb78d" mimeType="application/xml"/>
+		<ee:transform doc:name="Transform Message" doc:id="da116f69-ff87-4444-8a41-5e3542ae3645" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
