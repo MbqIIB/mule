@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:content-parameter="http://www.mulesoft.org/schema/mule/content-parameter"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/content-parameter http://www.mulesoft.org/schema/mule/content-parameter/current/mule-content-parameter.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config"
+		doc:name="HTTP Listener config" doc:id="a3d69571-dd4c-4054-84cc-1905aee7147a">
+		<http:listener-connection host="0.0.0.0"
+			port="8081" />
+	</http:listener-config>
+	<content-parameter:config name="Content_Parameter_Config"
+		doc:name="Content Parameter Config" doc:id="98527f3f-8aff-4ffa-8a9b-bb9344829d70"
+		configId="c1r" />
+	<http:listener-config name="HTTP_Listener_config1"
+		doc:name="HTTP Listener config" doc:id="d13c68d1-d820-4cb1-ab4e-a480f9a89ba0">
+		<http:listener-connection host="0.0.0.0" port="8085" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config2" doc:name="HTTP Listener config" doc:id="af30516b-d183-4e89-b3b7-f699479e4455" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config3" doc:name="HTTP Listener config" doc:id="321684d8-7a73-498a-9f5a-3e1932b6c40a" >
+		<http:listener-connection host="0.0.0.0" port="8086" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config4" doc:name="HTTP Listener config" doc:id="1c96677c-bc41-49b5-a184-6084c3e3d7ef" >
+		<http:listener-connection host="0.0.0.0" port="8087" />
+	</http:listener-config>
+	<flow name="sdk-content-parameter-connector-usageFlow" doc:id="eae5f3ba-76cd-4598-adc0-f00db7d01c82" >
+		<http:listener doc:name="Listener" doc:id="8b1446ae-4866-4fbe-be5d-f711f161b6e2" config-ref="HTTP_Listener_config" path="/cp" doc:description='input type json
+{
+	"department": {
+		"id": 101,
+		"name": "IT"
+	},
+	"firstName": "James",
+	"id": 1,
+	"lastName": "Waller"
+}'/>
+		<content-parameter:get-employee doc:name="Get employee" doc:id="f7e75b90-a63f-494c-8a32-f12c0f9c8466" config-ref="Content_Parameter_Config" path="/api/path" doc:description='1
+#[%dw 2.0
+output application/xml encoding="UTF-8"
+---
+rootElement: payload
+]
+
+2
+#[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.connector.contentparameter.internal.pojo.Employee"}
+---
+payload as employee
+]
+
+3
+#[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.request.pojo.Employee"}
+---
+payload as employee
+]'>
+			<content-parameter:request-builder >
+				<content-parameter:body ><![CDATA[#[%dw 2.0
+output application/xml encoding="UTF-8"
+---
+rootElement: payload
+]]]></content-parameter:body>
+				<content-parameter:body1 ><![CDATA[#[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.connector.contentparameter.internal.pojo.Employee"}
+---
+payload as employee
+]]]></content-parameter:body1>
+				<content-parameter:employee ><![CDATA[#[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.request.pojo.Employee"}
+---
+payload as employee
+]]]></content-parameter:employee>
+				<content-parameter:uri-params ><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></content-parameter:uri-params>
+				<content-parameter:headers ><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></content-parameter:headers>
+				<content-parameter:query-params ><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></content-parameter:query-params>
+				<content-parameter:search-params ><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></content-parameter:search-params>
+			</content-parameter:request-builder>
+		</content-parameter:get-employee>
+		<ee:transform doc:name="Transform Message" doc:id="b3bebf29-b059-44c7-b547-393ff74ceb2c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	
+<flow name="pass-parameter-with-dw-transferFlow" doc:id="a52be47c-d996-4487-aa4f-fba9dd2fa0f9" >
+		<http:listener doc:name="Listener" doc:id="561bcf3a-f03b-4c44-a650-7c8cf8de48da" config-ref="HTTP_Listener_config2" path="/cp2" doc:description='input type
+{
+	"department": {
+		"id": 101,
+		"name": "IT"
+	},
+	"firstName": "James",
+	"id": 1,
+	"lastName": "Waller"
+}'/>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="5e727278-0043-4f6c-bcd0-5bd8a97b048e" variableName="emp1"/>
+		<ee:transform doc:name="Transform Message" doc:id="032f1705-f349-446d-bbeb-1d1e1bc92123" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	employee: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<content-parameter:get-employee doc:name="Get employee" doc:id="fba807f7-15d8-4d72-8a72-3018dae4fa7c" config-ref="Content_Parameter_Config" path="/api/path" doc:description='1
+#[%dw 2.0
+output application/xml encoding="UTF-8"
+---
+rootElement: payload
+]
+
+2
+#[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.connector.contentparameter.internal.pojo.Employee"}
+---
+payload as employee
+]
+
+3
+#[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.request.pojo.Employee"}
+---
+payload as employee
+]'>
+			<content-parameter:request-builder >
+				<content-parameter:body ><![CDATA[#[%dw 2.0
+output application/xml encoding="UTF-8"
+---
+rootElement : payload
+]]]></content-parameter:body>
+				<content-parameter:body1 ><![CDATA[#[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.connector.contentparameter.internal.pojo.Employee"}
+---
+vars.emp1 as employee
+]]]></content-parameter:body1>
+				<content-parameter:employee ><![CDATA[#[%dw 2.0
+output application/java
+---
+vars.emp1
+]]]></content-parameter:employee>
+				<content-parameter:uri-params ><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></content-parameter:uri-params>
+				<content-parameter:headers ><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></content-parameter:headers>
+				<content-parameter:query-params ><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></content-parameter:query-params>
+				<content-parameter:search-params ><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></content-parameter:search-params>
+			</content-parameter:request-builder>
+		</content-parameter:get-employee>
+		<ee:transform doc:name="Transform Message" doc:id="e7840596-d4c1-4fd8-9e61-9d7e8f0f2864" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>	
+	<flow name="sdk-content-parameter-connector-usageFlow1" doc:id="d2840791-2d8d-4c48-a3a7-83857d88a967" >
+		<http:listener doc:name="Listener" doc:id="be754349-9a39-4d3f-95c3-a4419f3b0606" config-ref="HTTP_Listener_config1" path="/test" doc:description='input type json
+{
+	"department": {
+		"id": 101,
+		"name": "IT"
+	},
+	"firstName": "James",
+	"id": 1,
+	"lastName": "Waller"
+}'/>
+		<ee:transform doc:name="Transform Message" doc:id="d75cee18-1748-4137-9161-69181e2c79e6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.request.pojo.Employee"}
+---
+payload as employee]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="d533bbf7-8a0e-44c1-8a5c-72c1fc743083" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+employee : payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="trim-rootElementFlow1" doc:id="e0898839-9375-45a8-8133-ced5b2189a11" >
+		<http:listener doc:name="Listener" doc:id="4121aa37-d45c-4225-9807-fb8a7a7c878d" config-ref="HTTP_Listener_config3" path="/test2" doc:description='input type json
+{
+	"employee" : {
+			"department": {
+				"id": 101,
+				"name": "IT"
+			},
+			"firstName": "James",
+			"id": 1,
+			"lastName": "Waller"
+	}
+}'/>
+		<ee:transform doc:name="Transform Message" doc:id="e3db2eb4-51d6-470a-a1a3-07bc6753814a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.employee
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="1ed6896b-9087-4425-af72-4b08bb2878f9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.request.pojo.Employee"}
+---
+payload as employee]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="c5b79ba0-6f18-4da3-88ee-c76625828cde" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+employee : payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	
+</flow>
+	<flow name="trim-rootElementFlow2" doc:id="ce376ab0-6959-4972-b90b-685aca48cab2" >
+		<http:listener doc:name="Listener" doc:id="0b93fa05-448d-4c6d-8dc8-be18e42a0861" config-ref="HTTP_Listener_config4" path="/test4" doc:description='input type json
+{
+	"employee" : {
+			"department": {
+				"id": 101,
+				"name": "IT"
+			},
+			"firstName": "James",
+			"id": 1,
+			"lastName": "Waller"
+	}
+}'/>
+		<ee:transform doc:name="Transform Message" doc:id="856cbb9a-573e-493e-9b30-dcb2accb5342" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload[0]
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="c5e17aa3-f55d-48a2-8108-ba627c66105e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.request.pojo.Employee"}
+---
+payload as employee]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="3f870c34-993b-4505-8dbe-ccf5f6c52fdf" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+employee : payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	
+</flow>
+</mule>

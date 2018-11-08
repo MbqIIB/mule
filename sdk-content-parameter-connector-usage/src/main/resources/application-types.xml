@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="emp_jsontype" format="json">
+      <types:shape format="weave" example="examples/example.json"><![CDATA[%dw 2.0
+type emp_jsontype = {|
+  employee: {|
+    department: {|
+      id: Number {"typeId": "int"}, 
+      name: String
+    |}, 
+    firstName: String, 
+    id: Number {"typeId": "int"}, 
+    lastName: String
+  |}
+|} {"MetadataFormat": "json",
+"example": "{\"employee\":{\"department\":{\"id\":101,\"name\":\"IT\"},\"firstName\":\"James\",\"id\":1,\"lastName\":\"Waller\"}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="emp_xmltype" format="xml">
+      <types:example format="xml" element="envalope" location="examples/exmployee_env.xml"/>
+    </types:type>
+  </types:catalog>
+</types:mule>

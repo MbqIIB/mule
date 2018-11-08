@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+		<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d926a4a3-d57b-4351-babd-161b463b7b3c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="33801fd7-7461-417b-aa12-2f110715f7b5" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="trim-rootElementFlow1" doc:id="e12d203d-e634-45aa-9311-145cd0ec40ab" >
+		<http:listener doc:name="Listener" doc:id="74813265-44bc-4543-880b-ce2d5a54d79c" config-ref="HTTP_Listener_config" path="/test1" doc:description='input type json
+{
+	"employee" : {
+			"department": {
+				"id": 101,
+				"name": "IT"
+			},
+			"firstName": "James",
+			"id": 1,
+			"lastName": "Waller"
+	}
+}'/>
+		<ee:transform doc:name="Transform Message" doc:id="9f5000a1-9ad0-4abf-9699-64f39c0fd95c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.employee
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="f15bc1e7-972a-4d54-abf5-f6e3fde878a8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.request.pojo.Employee"}
+---
+payload as employee]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="737c598c-d2a5-41da-b585-ef6786cc9180" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+employee : payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	
+</flow>
+	<flow name="trim-rootElementFlow2" doc:id="7acd4380-f85e-43c1-949a-51a75458763c" >
+		<http:listener doc:name="Listener" doc:id="736265ad-3d39-469f-a64c-d64761d15e3b" config-ref="HTTP_Listener_config1" path="/test2" doc:description='input type json
+{
+	"employee" : {
+			"department": {
+				"id": 101,
+				"name": "IT"
+			},
+			"firstName": "James",
+			"id": 1,
+			"lastName": "Waller"
+	}
+}'/>
+		<ee:transform doc:name="Transform Message" doc:id="fa2f0c0f-1ddf-45ec-9efd-c2362fd5df1d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload[0]
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="a81027e7-34fd-4e7b-a048-45e91ddf6745" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+type employee = Object { class: "com.laxtech.request.pojo.Employee"}
+---
+payload as employee]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="428d20ba-d7d2-4858-a89c-217bc95cc732" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+employee : payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	
+</flow>
+	</mule>
