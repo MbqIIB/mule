@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b0a35df3-f888-464f-b508-fe84f9a6d11d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="d4509956-e6c7-4e94-8f01-0d8d1bf27326" />
+	<flow name="propage-to-runtime" doc:id="0226cdea-5280-4f70-a064-47027d51d47f" >
+		<http:listener doc:name="Listener" doc:id="da53c64d-4284-4b05-92a1-523683cca04a" config-ref="HTTP_Listener_config" path="/ip-cp"/>
+		<flow-ref doc:name="Flow Reference" doc:id="56e602ef-673f-4d1d-9d4c-8671d3eda141" name="innner-flow1"/>
+		<set-payload value="Success!!!" doc:name="Set Payload" doc:id="b1967539-e9e5-4867-b805-b337d7b0a5bf" />
+	</flow>
+	<flow name="innner-flow1" doc:id="07bba4f3-deda-474c-8161-5b4e340eeb6e" >
+		<http:request method="GET" doc:name="Request" doc:id="1a09a433-dd77-44ee-ad29-9bf7604c59ba" config-ref="HTTP_Request_configuration" url="http://localhost:8081/notfound"/>
+	</flow>
+	<flow name="main-continue-error1" doc:id="8a5cf3fd-a561-4f8a-8e59-c1abcaf53425" >
+		<http:listener doc:name="Listener" doc:id="ba846188-e854-4611-bb4f-adb591c3e115" config-ref="HTTP_Listener_config" path="/ip-mc"/>
+		<flow-ref doc:name="Flow Reference" doc:id="cb078afe-c65e-4ce6-b08f-aa2d6da5777a" name="innner-flow-propagate1"/>
+		<set-payload value="Success!!!" doc:name="Set Payload" doc:id="0f615ccb-b04e-4653-91c0-cd46424a4ed1" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="83eb14ed-5089-427b-9ff3-733c39ef89d7" type="HTTP:NOT_FOUND">
+				<logger level="INFO" doc:name="Copy_of_Logger" doc:id="3437b4d0-a1f2-42fc-9271-a2de1c0d3f61" message="Main flow  continue error : #[error.description]" />
+				<set-payload value="#['Error occured!!! : ' ++ error.description]" doc:name="Set Payload" doc:id="c8a784a0-cc90-4acc-8429-69d70cf965e1" mimeType="text/html"/>
+			</on-error-continue>
+		</error-handler>
+	
+</flow>
+	<flow name="innner-flow-propagate1" doc:id="1689331f-dfc3-4889-9bfb-5bbc72ef55f8" >
+		<http:request method="GET" doc:name="Request" doc:id="7c8d03f7-7ca6-476d-8c7e-9625089201f6" config-ref="HTTP_Request_configuration" url="http://localhost:8081/notfound"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b5fda20f-b3eb-4ca1-95b0-44a8066d544c" type="HTTP:NOT_FOUND">
+				<logger level="INFO" doc:name="Logger" doc:id="c55c4702-05e8-40cd-a28f-37fc1555544d" message="Inner flow  propagate error : #[error.description]"/>
+			</on-error-propagate>
+		</error-handler>
+	
+</flow>
+
+	<flow name="main-continue-error2" doc:id="eae3dd1b-cacc-41f7-9eb9-034f8c869720" >
+		<http:listener doc:name="Listener" doc:id="a6ecc431-b9af-4528-8fea-edf97f091563" config-ref="HTTP_Listener_config" path="/ic-mc"/>
+		<flow-ref doc:name="Flow Reference" doc:id="bdcb298d-9a13-42fd-b3b6-5a259dd51395" name="innner-flow-continue2"/>
+		<set-payload value="Success!!!" doc:name="Set Payload" doc:id="87e93df0-dc20-4421-84ba-6d61c0b687e4" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c2face8e-b696-4775-add3-b8623da5cc37" type="HTTP:NOT_FOUND">
+				<logger level="INFO" doc:name="Copy_of_Logger" doc:id="30c3f1a5-9896-449e-a7c4-11d40a48e368" message="Main flow  continue error : #[error.description]" />
+				<set-payload value="#['Error occured!!! : ' ++ error.description]" doc:name="Set Payload" doc:id="672aa8a3-003d-48a4-b5fd-a9829073ac85" mimeType="text/html"/>
+			</on-error-continue>
+		</error-handler>
+	
+</flow>
+	<flow name="innner-flow-continue2" doc:id="fb3f62f7-d39e-4e47-a9b3-344056027cc6" >
+		<http:request method="GET" doc:name="Request" doc:id="6c93fd34-a0bd-4308-a9c6-3d6cee43fb0e" config-ref="HTTP_Request_configuration" url="http://localhost:8081/notfound"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d3918484-7c4b-4618-bd74-0a68c7948156" type="HTTP:NOT_FOUND">
+				<logger level="INFO" doc:name="Logger" doc:id="2c0687ca-99ae-4dbd-b29e-9d34db788cc2" message="Inner flow  propagate error : #[error.description]" />
+			</on-error-continue>
+		
+</error-handler>
+	
+</flow>
+</mule>

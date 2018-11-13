@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e61b3bd1-4d82-40af-9e7d-df49be5b44d6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="b6d92035-f1a0-4510-bf3d-a278161fb644" />
+	<flow name="error-error-mappingFlow" doc:id="aad6addf-dc2f-4bf3-949f-4a46b1ca87cd" >
+		<http:listener doc:name="Listener" doc:id="3b3b220e-aa4b-4933-8730-f2447e990004" config-ref="HTTP_Listener_config" path="/error_mapping"/>
+		<http:request method="GET" doc:name="Request" doc:id="679bace2-6870-4118-9b45-73ad2145ebb8" config-ref="HTTP_Request_configuration" url="http://localhost:8081/working">
+			<error-mapping sourceType="HTTP:NOT_FOUND" targetType="APP1:API1-NOT-FOUND" />
+		</http:request>
+		<http:request method="GET" doc:name="Request" doc:id="dd1287d1-90d9-4d78-901a-18853acf0ab3" config-ref="HTTP_Request_configuration" url="http://localhost:8081/notfoundAPI2"/>
+		<ee:transform doc:name="Transform Message" doc:id="9b1a525a-d6f8-4d52-a754-b199d6bf030d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Success!!!"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="cdf6c04d-d3f3-450b-9c56-5d29289943c2" type="APP1:API1-NOT-FOUND">
+				<logger level="INFO" doc:name="Logger" doc:id="5acee110-be9f-4f76-94e7-046a0437e13d" message="Error API1 not found. Error: #[error.description]"/>
+				<set-payload value='#["Error API1 not found. Error:" ++ error.description]' doc:name="Set Payload" doc:id="a1081e28-96ab-4944-a87e-3b9cdfbc328c" mimeType="text/html"/>
+			</on-error-continue>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="74262f2d-7a45-47f3-8dda-a12848101fe2" >
+				<logger level="INFO" doc:name="Logger" doc:id="481b45e3-d358-4019-8537-2b33b2e02fc8" message="Error API2 not found. Error: #[error.description]"/>
+				<set-payload value='#["Error API2 not found. Error:" ++ error.description]' doc:name="Set Payload" doc:id="e5143054-7e62-4bd8-b844-5482afaa75b0" mimeType="text/html"/>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="working-flow-for-test" doc:id="198e61df-b9ea-4f99-a6a9-71482a12de6e" >
+		<http:listener doc:name="Listener" doc:id="9bcc66aa-126b-42fd-84ee-926ba9298517" config-ref="HTTP_Listener_config" path="/working"/>
+		<ee:transform doc:name="Transform Message" doc:id="ca2215ee-c9a3-4692-b7a4-7c6115501607" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message : "working flow is successful..."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration doc:name="Configuration"
+		doc:id="dc7879cf-1aac-4976-b5aa-d3293ec7f871" defaultErrorHandler-ref="allErrorHandler" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="1998bff1-dfb0-401d-9dfd-5aec1bb84f5b" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e3b831c7-9c99-4904-9e5a-570730b950d9" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<error-handler name="allErrorHandler">
+		<on-error-continue>
+			<set-payload
+				value="#['An unhandled error occurred: ' ++ error.description]" />
+			<set-payload value="#[payload]" doc:name="Set Payload" doc:id="124751e2-0930-4334-9d23-3c693c6835c2" mimeType="text/html"/>
+		
+</on-error-continue>
+	</error-handler>
+	<error-handler name="loggingErrorHandler">
+		<on-error-continue>
+			<logger
+				message="#['Error: ' ++ error.description ++ ', Payload: ' ++ payload]" />
+			<set-payload value="#['An unhandled error occurred: ' ++ error.description]" doc:name="Set Payload" doc:id="1b52f4b0-8c64-409c-96e4-836988ff8e2a" mimeType="text/html"/>
+		
+</on-error-continue>
+	</error-handler>
+	<error-handler name="loggingError2Handler"
+		doc:id="7606866f-e39f-4aef-a18b-b239d86913f4">
+		<on-error-continue enableNotifications="true"
+			logException="true" doc:name="On Error Continue" doc:id="0fa69373-9a31-45f5-9b77-a19120b2cfc0">
+			<logger level="INFO" doc:name="Logger"
+				doc:id="4fcd12ee-83f3-438a-a4a3-7b032dafee8f"
+				message="#['Error: ' ++ error.description ++ ', Payload: ' ++ payload]" />
+			<set-payload value="#['An unhandled error occurred: ' ++ error.description]" doc:name="Set Payload" doc:id="1d7e409a-6935-45f2-a8a8-2606ac62cc3b" mimeType="text/html"/>
+		</on-error-continue>
+	</error-handler>
+	<flow name="loggingErrorWithSharedHandlerFlow" doc:id="b956df8c-8a13-4cd3-b047-c67405223a60" >
+		<http:listener doc:name="Listener" doc:id="84621413-c0d6-44dc-9ece-d3079fce2385" config-ref="HTTP_Listener_config" path="/noerrorhandler"/>
+		<http:request method="GET" doc:name="Request" doc:id="3577c135-fc11-4438-a517-fc7ff8d0b188" config-ref="HTTP_Request_configuration" url="http://example234234.com"/>
+		<ee:transform doc:name="Transform Message" doc:id="ccc94932-aadf-46b3-a430-aff946719382" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "You should not see this message."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+
+	<flow name="withSharedHandler">
+		<http:listener doc:name="Listener" doc:id="490482d5-9475-4734-b5df-fc69d5384c76" config-ref="HTTP_Listener_config" path="/logerrorhandler"/>
+		<http:request url="http://example4234234.com" config-ref="HTTP_Request_configuration" method="GET"/>
+		<ee:transform doc:name="Transform Message" doc:id="94fc4e78-90c4-4cc2-879f-e35bc41b4010" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	message: "You should not see this message."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler ref="loggingErrorHandler" />
+	</flow>
+</mule>
+	
