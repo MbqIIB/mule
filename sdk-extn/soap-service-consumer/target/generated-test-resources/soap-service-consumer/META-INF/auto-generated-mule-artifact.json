@@ -1,0 +1,26 @@
+{
+  "extensionModelLoaderDescriptor": {
+    "id": "java",
+    "attributes": {
+      "type": "com.laxtech.connectors.soapserviceconsumer.internal.SoapServiceConsumerExtension",
+      "version": "4.0.0"
+    }
+  },
+  "name": "Soap Service Consumer",
+  "requiredProduct": "MULE",
+  "classLoaderModelLoaderDescriptor": {
+    "id": "mule",
+    "attributes": {
+      "privilegedExportedPackages": [],
+      "privilegedArtifactIds": [],
+      "exportedPackages": [
+        "com.laxtech.connectors.soapserviceconsumer.api"
+      ],
+      "exportedResources": []
+    }
+  },
+  "bundleDescriptorLoader": {
+    "id": "mule",
+    "attributes": {}
+  }
+}
