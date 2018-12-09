@@ -49,6 +49,9 @@
                 <parameter name="number2">
                     <description><![CDATA[]]></description>
                 </parameter>
+                <parameter name="operation">
+                    <description><![CDATA[]]></description>
+                </parameter>
                 <parameter name="body">
                     <description><![CDATA[]]></description>
                 </parameter>
@@ -60,6 +63,32 @@
                 </parameter>
                 <parameter name="streamingStrategy">
                     <description><![CDATA[Configure if repeatable streams should be used and their behaviour]]></description>
+                </parameter>
+                <parameter name="target">
+                    <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>
+                </parameter>
+                <parameter name="targetValue">
+                    <description><![CDATA[An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable]]></description>
+                </parameter>
+                <parameter name="reconnectionStrategy">
+                    <description><![CDATA[A retry strategy in case of connectivity errors]]></description>
+                </parameter>
+            </parameters>
+        </operation>
+        <operation name="addition">
+            <description><![CDATA[]]></description>
+            <parameters>
+                <parameter name="number1">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="number2">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="operation">
+                    <description><![CDATA[]]></description>
+                </parameter>
+                <parameter name="body">
+                    <description><![CDATA[]]></description>
                 </parameter>
                 <parameter name="target">
                     <description><![CDATA[The name of a variable on which the operation's output will be placed]]></description>

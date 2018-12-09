@@ -135,4 +135,5 @@ output text/plain
 		</ee:transform>
 		<rabbitmq:publish doc:name="Publish" doc:id="63064871-7270-408a-a599-9ec8ea032c6c" config-ref="Rabbitmq_Config" message="#[payload]"/>
 	</flow>
+	
 </mule>

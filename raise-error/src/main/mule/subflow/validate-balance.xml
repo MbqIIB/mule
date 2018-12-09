@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="validate-balanceSub_Flow" doc:id="956acb50-2e58-4554-8f65-51304bbc1ab3" >
+		<logger level="DEBUG" doc:name="Logger" doc:id="fba252d8-6334-4ce6-b293-e49da1de70c0" message="validate-balanceSub_Flow"/>
+		<set-variable value="#[payload.amount]" doc:name="Set Variable" doc:id="96c02e8f-9827-4102-980a-f1546f0e0049" variableName="amount"/>
+		<set-variable value="#[attributes.queryParams.balance]" doc:name="Set Balance" doc:id="8442e653-073a-4be6-a702-ca2f646881fd" variableName="balance" />
+		<choice doc:name="Choice" doc:id="c6999dca-f73a-4ed5-a1f8-8174f638c9b7" >
+			<when expression="vars.balance &lt; vars.amount">
+				<ee:transform doc:name="Transform Message" doc:id="97ad986e-d3a5-4903-82bd-c6d63b624070" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Insufficient fund"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="5317a580-6519-4794-a832-981182d1b191" message="#[payload]"/>
+				<raise-error type="ACCOUNT:INSUFFICIENT_FUNDS" description="#['Cannot transfer  $(vars.amount)  since only $(vars.balance) are available.']"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="642b4d8b-f63e-40b2-97a4-100f3a76bc10" />
+			</otherwise>
+		</choice>	
+	</sub-flow>
+</mule>

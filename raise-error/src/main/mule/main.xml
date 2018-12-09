@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config"
+		doc:name="HTTP Listener config" doc:id="7f624008-c4f8-4eea-8179-d07dd3356308">
+		<http:listener-connection host="0.0.0.0"
+			port="8081" />
+	</http:listener-config>
+	<flow name="main_Flow" doc:id="1d8fc15f-1aa5-4019-a82c-07980d1168d3">
+		<http:listener doc:name="Listener"
+			doc:id="42bdd281-0b91-426a-baa8-b0d9a843c043" config-ref="HTTP_Listener_config"
+			path="/raise_error" allowedMethods="POST"
+			doc:description='http://localhost:8081/raise_error?balance=600
+				{
+					"account_from" : 11111,
+					"account_to": 22222,
+					"account_type": "cd",
+					"amount" : 450
+				}' />
+		<logger level="DEBUG" doc:name="Logger"
+			doc:id="73f62cdc-706f-40fe-90ea-cebc2adeeb18" message="raise-error flow" />
+		<flow-ref doc:name="Validate Balance" doc:id="2c9dd1ff-26ea-487a-a690-5f2bac6dd3b3"
+			name="validate-balanceSub_Flow" />
+		<flow-ref doc:name="Get Transfer Flag and Transffer Limit"
+			doc:id="89ee9682-6bd3-4142-81e9-9f62096c31df" name="get-transfer-flag-and-limitSub_Flow" />
+		<flow-ref doc:name="Transfer Fund" doc:id="37cdb61e-6294-42fc-b47d-f833b7dde5ad"
+			name="transfer-fundSub_Flow" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="46ef21f3-8c1f-4fb2-99ed-496c26e1ef60"
+				type="ACCOUNT:INSUFFICIENT_FUNDS">
+				<logger level="ERROR" doc:name="Log Error"
+					doc:id="64a0fa9c-50f6-4585-8364-f52c83bf78fa" message="Main flow  continue error : #[error.description]" />
+				<ee:transform doc:name="Transform Message" doc:id="7f3e7fb2-eba8-457a-8e60-131206450f75" >
+					<ee:message >
+						<ee:set-payload resource="dwl\errors\account_insufficient_funds.dwl" />
+					</ee:message>
+				</ee:transform>			
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b2ed0522-7a9f-4ed6-97f5-c918cebc6e23" type="TRANSFER:WRONG_ACCOUNT_TYPE">
+				<logger level="ERROR" doc:name="Log Error" doc:id="6527fa12-f5b3-487b-8d5e-baa2e4065601" message="Main flow  continue error : #[error.description]" />
+				<ee:transform doc:name="Transform Message" doc:id="9f7a011d-13af-47c1-ab89-b5027364769c" >
+					<ee:message >
+						<ee:set-payload resource="dwl\errors\transfer_wrong_account_type.dwl" />						
+					</ee:message>
+				</ee:transform>					
+			</on-error-continue>
+		</error-handler>	
+	</flow>
+</mule>

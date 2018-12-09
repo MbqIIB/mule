@@ -13,6 +13,9 @@ public class SoapClientConfig {
     public String service;
 
     @Parameter
+    public String port;
+    
+    @Parameter
     @Optional(defaultValue="utf-8")
     public String encoding;
 
@@ -53,6 +56,23 @@ public class SoapClientConfig {
 
 	public void setService(String service) {
 		this.service = service;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	@Override
+	public String toString() {
+		return "SoapClientConfig [wsdlLocation=" + wsdlLocation + ", service=" + service + ", port=" + port
+				+ ", encoding=" + encoding + ", soapVersion=" + soapVersion + "]";
 	}    
+	
+	
+	
 	
 }

@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.laxtech.connectors</groupId>
 	<artifactId>soap-service-consumer</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.8</version>
 	<packaging>mule-extension</packaging>
 	<name>Soap Service Consumer Extension</name>
 

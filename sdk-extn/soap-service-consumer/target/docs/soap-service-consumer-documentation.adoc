@@ -52,6 +52,7 @@ Default configuration
 
 ==== Associated Operations
 * <<add>> {nbsp}
+* <<addition>> {nbsp}
 * <<retrieveInfo>> {nbsp}
 
 
@@ -70,6 +71,7 @@ Default configuration
 | Configuration | String | The name of the configuration to use. | | *x*{nbsp}
 | Number1 a| Number |  |  | *x*{nbsp}
 | Number2 a| Number |  |  | *x*{nbsp}
+| Operation a| String |  |  | *x*{nbsp}
 | Body a| Binary |  |  +++#[payload]+++ | {nbsp}
 | Output Mime Type a| String |  +++The mime type of the payload that this operation outputs.+++ |  | {nbsp}
 | Output Encoding a| String |  +++The encoding of the payload that this operation outputs.+++ |  | {nbsp}
@@ -86,6 +88,40 @@ Default configuration
 [cols=".^50%,.^50%"]
 |======================
 | *Type* a| Binary
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* SOAP-SERVICE-CONSUMER:RETRY_EXHAUSTED {nbsp}
+* SOAP-SERVICE-CONSUMER:CONNECTIVITY {nbsp}
+
+
+[[addition]]
+=== Addition
+`<soap-service-consumer:addition>`
+
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Number1 a| Number |  |  | *x*{nbsp}
+| Number2 a| Number |  |  | *x*{nbsp}
+| Operation a| String |  |  | *x*{nbsp}
+| Body a| Binary |  |  +++#[payload]+++ | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| Number
 |======================
 
 ==== For Configurations.
@@ -221,6 +257,7 @@ Example of a simple operation that receives a string parameter and returns a new
 | Field | Type | Description | Default Value | Required
 | Wsdl Location a| String |  |  | x
 | Service a| String |  |  | x
+| Port a| String |  |  | x
 | Encoding a| String |  | utf-8 | 
 | Soap Version a| String |  | 1.1 | 
 |======================

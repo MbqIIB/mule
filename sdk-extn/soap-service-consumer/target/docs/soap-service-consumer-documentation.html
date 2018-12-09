@@ -2077,6 +2077,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_operations">Operations</a>
 <ul class="sectlevel2">
 <li><a href="#add">Add</a></li>
+<li><a href="#addition">Addition</a></li>
 <li><a href="#retrieveInfo">Retrieve Info</a></li>
 <li><a href="#sayHi">Say Hi</a></li>
 </ul>
@@ -2256,6 +2257,9 @@ Default configuration
 <p><a href="#add">Add</a> &#160;</p>
 </li>
 <li>
+<p><a href="#addition">Addition</a> &#160;</p>
+</li>
+<li>
 <p><a href="#retrieveInfo">Retrieve Info</a> &#160;</p>
 </li>
 </ul>
@@ -2312,6 +2316,15 @@ Default configuration
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Number2</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Operation</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-left valign-middle"></td>
@@ -2442,6 +2455,152 @@ Default configuration
 </div>
 </div>
 <div class="sect2">
+<h3 id="addition">Addition</h3>
+<div class="paragraph">
+<p><code>&lt;soap-service-consumer:addition&gt;</code></p>
+</div>
+<div class="sect3">
+<h4 id="_parameters_4">Parameters</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 20%;">
+<col style="width: 5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-center valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Configuration</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of the configuration to use.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Number1</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Number2</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Operation</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Body</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Binary</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">#[payload]</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of a variable on which the operation's output will be placed</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Value</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">#[payload]</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Reconnection Strategy</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="ulist">
+<ul>
+<li>
+<p><a href="#reconnect">Reconnect</a></p>
+</li>
+<li>
+<p><a href="#reconnect-forever">Reconnect Forever</a></p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A retry strategy in case of connectivity errors</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_output_2">Output</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_for_configurations_2">For Configurations.</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#config">Config</a> &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_throws_2">Throws</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>SOAP-SERVICE-CONSUMER:RETRY_EXHAUSTED &#160;</p>
+</li>
+<li>
+<p>SOAP-SERVICE-CONSUMER:CONNECTIVITY &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="retrieveInfo">Retrieve Info</h3>
 <div class="paragraph">
 <p><code>&lt;soap-service-consumer:retrieve-info&gt;</code></p>
@@ -2452,7 +2611,7 @@ Example of an operation that uses the configuration and a connection instance to
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_4">Parameters</h4>
+<h4 id="_parameters_5">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -2525,7 +2684,7 @@ Example of an operation that uses the configuration and a connection instance to
 </table>
 </div>
 <div class="sect3">
-<h4 id="_output_2">Output</h4>
+<h4 id="_output_3">Output</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 50%;">
@@ -2542,7 +2701,7 @@ Example of an operation that uses the configuration and a connection instance to
 </table>
 </div>
 <div class="sect3">
-<h4 id="_for_configurations_2">For Configurations.</h4>
+<h4 id="_for_configurations_3">For Configurations.</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2552,7 +2711,7 @@ Example of an operation that uses the configuration and a connection instance to
 </div>
 </div>
 <div class="sect3">
-<h4 id="_throws_2">Throws</h4>
+<h4 id="_throws_3">Throws</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2576,7 +2735,7 @@ Example of a simple operation that receives a string parameter and returns a new
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_5">Parameters</h4>
+<h4 id="_parameters_6">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -2635,7 +2794,7 @@ Example of a simple operation that receives a string parameter and returns a new
 </table>
 </div>
 <div class="sect3">
-<h4 id="_output_3">Output</h4>
+<h4 id="_output_4">Output</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 50%;">
@@ -2930,6 +3089,15 @@ Example of a simple operation that receives a string parameter and returns a new
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Service</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Port</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>

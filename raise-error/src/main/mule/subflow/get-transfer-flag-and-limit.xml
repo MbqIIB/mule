@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="get-transfer-flag-and-limitSub_Flow" doc:id="65ebdeed-839c-4f05-b19b-40b9e4c1b93e" >
+		<logger level="DEBUG" doc:name="Logger" doc:id="5d11be39-7264-422d-8cb9-d0c3545277b9" message="transfer-fundSub_Flow"/>
+		<choice doc:name="Choice" doc:id="58c31db8-0d45-4a07-af7b-bad732d96f5c" >
+			<when expression="payload.account_type != 'saving' and payload.account_type != 'current'">
+				<logger level="ERROR" doc:name="Logger" doc:id="27a311fd-ad5f-4577-b5a8-5c90c5f4c249" message="Account type is #[payload.account_type]"/>
+				<raise-error type="TRANSFER:WRONG_ACCOUNT_TYPE" description="#['Cannot transfer fund from account type $(payload.account_type).']"/>
+      		</when>
+			<otherwise >
+				<logger level="DEBUG" doc:name="Logger" doc:id="2df225f3-620a-433b-af5c-2a2a8810efdc" message="Account type is #[payload]. Account can be transffered."/>
+				<set-variable value="#[attributes.queryParams.trasfer_flag]" doc:name="Set Transfer Flag" doc:id="f65c63dd-b825-4b62-90dd-fa423858dda5" variableName="transfer_flag"/>
+				<logger level="INFO" doc:name="Logger" doc:id="3da7ed9e-cca5-4898-9613-3128c0af0eb7" message="#['transfer flag is ' ++ vars.transfer_flag]"/>
+				<set-variable value="420" doc:name="Set Transfer Limit" doc:id="8684e60c-c85d-4b29-9144-1a7a1d43fb42" variableName="transffer_limit"/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

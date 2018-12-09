@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7870e942-b636-4cdc-8657-e38dbe05fb22" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="munittestsFlow" doc:id="251a12b2-a221-4bc2-9eac-5904767a53d5" >
+		<http:listener doc:name="Listener" doc:id="3a8f36b8-3b60-4338-bd25-702aba842590" config-ref="HTTP_Listener_config" path="/munit" allowedMethods="POST"/>
+		<choice doc:name="Choice" doc:id="31b119a1-b172-47b9-9ace-0445e468eb87" >
+			<when expression='#[attributes.queryParams.item_id=="100"]' >
+				<ee:transform doc:name="Transform Message" doc:id="65ad30e6-8a5c-4703-90c2-9bb14d580228">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload.status]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="584608c7-5045-47c8-ae7d-e46e5f4db3c4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+"Not Sure"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
