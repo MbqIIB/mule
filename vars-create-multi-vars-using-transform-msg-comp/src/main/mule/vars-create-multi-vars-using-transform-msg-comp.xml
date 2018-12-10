@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="21d36576-63ca-4980-b454-4a787406cbb7" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="vars-create-multi-vars-using-transfer-compFlow" doc:id="eb3d9392-42ae-4569-8dd4-3fa004e9c01f" >
+		<http:listener doc:name="Listener" doc:id="d1e728f2-9e08-435c-b836-59303755e51a" config-ref="HTTP_Listener_config" path="/vars"/>
+		<ee:transform doc:name="Transform Message" doc:id="7e224fda-5670-4a69-882a-1f54975b442e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="balance" ><![CDATA[%dw 2.0
+output application/java
+---
+600]]></ee:set-variable>
+				<ee:set-variable variableName="transfer_limit" ><![CDATA[%dw 2.0
+output application/java
+---
+450]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="24a7b2ef-e3c6-49c8-b252-6909dfa277cb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	balance: vars.balance,
+	transfer_limit: vars.transfer_limit
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
