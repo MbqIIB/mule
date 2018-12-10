@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2dd7cca1-043b-4d03-921e-1cbf5cb5ff09" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="validateFlow" doc:id="fcc1caeb-ecec-450e-aa6e-548776397a14" >
+		<http:listener doc:name="Listener" doc:id="9effed41-71e1-417b-ad46-a5f5a85bfca2" config-ref="HTTP_Listener_config" path="/validate" allowedMethods="POST" doc:description='http://localhost:8081/validate
+
+{
+	"account_from" : 11111,
+	"account_to": 22222,
+	"account_type": "saving",
+	"email": "ysanjeev@yahoo.com",
+	"amount" : 450
+}'/>
+		<logger level="INFO" doc:name="Logger" doc:id="51f4c089-681e-4f3b-97c3-8aec77cd1ecb" message="main flow"/>
+		<flow-ref doc:name="Retrieve Values Flow Reference" doc:id="fb8b4ec9-6a12-44b4-b3df-d72cf0a3d517" name="retrieve_valuesSub_Flow"/>
+		<flow-ref doc:name="Validate Flow Reference" doc:id="fa2f91f4-4648-4571-8d07-9a6f7100f150" name="validate-balanceSub_Flow"/>
+		<flow-ref doc:name="Transfer Fund Flow Reference" doc:id="0cc699ca-744f-4cb0-8da6-5951b35b9643" name="transfer-fundSub_Flow"/>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d7671e33-5767-4ca1-9868-447d9bb2b3fe" type="VALIDATION:INVALID_EMAIL">
+				<logger level="ERROR" doc:name="Log Error" doc:id="f06339f9-55eb-48f7-a77f-8ad94d879863" message="Main flow  continue error : #[error.description]" />
+				<ee:transform doc:name="Transform Message" doc:id="37de0a11-3ed9-444d-8881-90b7bea0a093" >
+					<ee:message >
+						<ee:set-payload resource="dwl\errors\invalid_email.dwl" />						
+					
+</ee:message>
+				</ee:transform>					
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b76b9857-6609-4b43-9a39-fb2238690c54" type="VALIDATION:BLANK_STRING">
+				<logger level="ERROR" doc:name="Log Error" doc:id="4131f53a-dbf9-4f65-9fec-9ee5c76e7bdc" message="Main flow  continue error : #[error.description]" />
+				<ee:transform doc:name="Transform Message" doc:id="8fb40577-9927-4423-bb70-db9f4916c7b5" >
+					<ee:message >
+						<ee:set-payload resource="dwl\errors\transfer_account_type_not_empty.dwl" />						
+					</ee:message>
+				</ee:transform>					
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="04d1f58c-8490-4a67-8000-78b9823973a0" type="VALIDATION:NULL" doc:description="This is not working.">
+				<logger level="ERROR" doc:name="Log Error" doc:id="148e8bc2-c30d-401f-8225-f1bed3481d98" message="Main flow  continue error : #[error.description]" />
+				<ee:transform doc:name="Transform Message" doc:id="21280d8d-c1d4-4035-a3a6-0690ab32b3a8">
+					<ee:message>
+						<ee:set-payload resource="dwl\errors\transfer_amount_not_null.dwl" />						
+					</ee:message>
+				</ee:transform>					
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="003bd128-22a1-4ec9-95cf-f7f93ab41d88" type="CUSTOM-VALIDATION:NULL" doc:description="This is working.">
+				<logger level="ERROR" doc:name="Log Error" doc:id="dee2b658-3aca-44e0-894f-d6fa451d2aec" message="Main flow  continue error : #[error.description]" />
+				<ee:transform doc:name="Transform Message" doc:id="57fb1405-7585-46c6-83f7-942e11364cb6">
+					<ee:message>
+						<ee:set-payload resource="dwl\errors\transfer_amount_not_null_custom.dwl" />						
+					</ee:message>
+				</ee:transform>					
+			</on-error-continue>									
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a4103836-903a-4d1c-93af-e079ce008ee8" type="VALIDATION:INVALID_NUMBER" doc:description="This is not working.">
+				<logger level="ERROR" doc:name="Log Error" doc:id="e6b77941-5d62-4308-9fb9-cb2002b56099" message="Main flow  continue error : #[error.description]" />
+				<ee:transform doc:name="Transform Message" doc:id="7966504d-2d7a-4f89-af7c-e925780c0fcc">
+					<ee:message>
+						<ee:set-payload resource="dwl\errors\transfer_amount_is_invalid_or_out_of_range.dwl" />						
+					</ee:message>
+				</ee:transform>					
+			</on-error-continue>		
+</error-handler>
+	</flow>
+</mule>

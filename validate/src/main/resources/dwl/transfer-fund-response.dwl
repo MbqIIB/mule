@@ -2,21 +2,11 @@
 output application/json
 var today = now()
 ---
-if (vars.tranfer_flag == false)
-	{
-		Error_Code: 500,
-		Type: "TRANFER.VALIDATION_ERROR",
-		Error_Description: "Fund " ++ vars.amount ++
-			" can not be transferred from account " 
-			++ payload.account_from ++ " to account " 
-			++  payload.account_to,
-		timestamp: today
-	}
-else if (vars.transfer_limit < vars.amount)
+if (vars.transfer_limit < payload.amount)
 	{
 		Error_Code: 600,
 		Type: "TRANFSER.EXCEEDS_LIMIT",
-		Error_Description: "Fund " ++ vars.amount 
+		Error_Description: "Fund " ++ payload.amount 
 			++ " can not be transferred from account " 
 			++ payload.account_from ++ " to account " 
 			++  payload.account_to
@@ -29,7 +19,7 @@ else
 	{
 		Message_Code: 200,
 		Type: "TRANSFER.SUCCESS",
-		Description: "Fund " ++ vars.amount ++
+		Description: "Fund " ++ payload.amount ++
 			" has been transferred from account " 
 			++ payload.account_from ++ " to account " 
 			++  payload.account_to,

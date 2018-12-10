@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<sub-flow name="validate-balanceSub_Flow" doc:id="956acb50-2e58-4554-8f65-51304bbc1ab3" >
+		<logger level="INFO" doc:name="Logger" doc:id="fba252d8-6334-4ce6-b293-e49da1de70c0" message="validate-balanceSub_Flow. Amount is #[payload.amount] a/c type #[payload.account_type] email address: #[payload.email]"/>
+		<validation:is-not-null doc:name="Is not null" doc:id="adf3abfd-02d2-430b-9115-04f66579e448" value="#[payload.amout]" message="Transfer amount can not be null." doc:description="This is not working."/>
+		<validation:is-number numberType="DOUBLE" doc:name="Is amount number" doc:id="41da95c3-f08e-4690-9819-4cc592d18b76" value="#[payload.amount]" minValue="0" maxValue="#[vars.balance]" message="#['Transfer amount ' ++ payload.amount ++ 
+' should be number and transfer amount should be between 0 and ' 
+++ vars.balance]"/>
+		<validation:is-not-blank-string doc:name="Account Type is not blank" doc:id="28001a8f-cd99-428b-8152-4b7ee16c1e52" value="#[payload.account_type]" message="Account type can not be blank."/>
+		<validation:is-email doc:name="Is email" doc:id="758ca16c-9e62-4485-8f0c-235aed76c7bf" email="#[payload.email]" message="Invalid email address." />
+		<choice doc:name="Choice" doc:id="c6999dca-f73a-4ed5-a1f8-8174f638c9b7" >
+			<when expression="payload.amount == null">
+				<logger level="INFO" doc:name="Logger" doc:id="5317a580-6519-4794-a832-981182d1b191" message="Transfer amount is null."/>
+				<raise-error doc:name="Transfer amount null" doc:id="9506cfc9-82ac-43ed-92eb-061977326813" type="CUSTOM-VALIDATION:NULL" description="Error. Transfer amount can not be null." />
+			
+</when>
+			<when expression="vars.balance &lt; payload.amount">
+				<logger level="INFO" doc:name="Logger" doc:id="4509207f-c2b3-44c2-b04a-8dff5aecd0b3" message="Insufficient fund."/>
+				<raise-error type="ACCOUNT:INSUFFICIENT_FUNDS" description="#['Cannot transfer  $(vars.amount)  since only $(vars.balance) are available.']" doc:name="Insufficient funds"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="642b4d8b-f63e-40b2-97a4-100f3a76bc10" message="No validation error."/>
+			</otherwise>
+		</choice>	
+	</sub-flow>
+</mule>

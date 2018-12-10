@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="f2af4fd9-08e1-4f8b-b514-d956bdc35d83" file="config/config-dev.yaml" />
+	<sub-flow name="retrieve_valuesSub_Flow" doc:id="0a6155ed-27f9-4218-902c-75377515e672" >
+		<logger level="INFO" doc:name="Logger" doc:id="2415ed14-5ffd-4152-a031-f6d52338b1f5" message="set-variableSub_Flow"/>
+		<set-variable doc:name="Set Balance" doc:id="c2af62ed-a3fe-4ca6-9a89-e8caceba0abf" variableName="balance" value="${account.balance}"/>
+		<set-variable value="${transfer.transfer_limit}" doc:name="Set Transfer Limit" doc:id="52e343b7-aefa-4f71-9a8d-4ec8c4f4bb14" variableName="transfer_limit"/>
+	
+</sub-flow>
+</mule>

@@ -14,7 +14,7 @@
 				<logger level="DEBUG" doc:name="Logger" doc:id="2df225f3-620a-433b-af5c-2a2a8810efdc" message="Account type is #[payload]. Account can be transffered."/>
 				<set-variable value="#[attributes.queryParams.trasfer_flag]" doc:name="Set Transfer Flag" doc:id="f65c63dd-b825-4b62-90dd-fa423858dda5" variableName="transfer_flag"/>
 				<logger level="INFO" doc:name="Logger" doc:id="3da7ed9e-cca5-4898-9613-3128c0af0eb7" message="#['transfer flag is ' ++ vars.transfer_flag]"/>
-				<set-variable value="420" doc:name="Set Transfer Limit" doc:id="8684e60c-c85d-4b29-9144-1a7a1d43fb42" variableName="transffer_limit"/>
+				<set-variable value="420" doc:name="Set Transfer Limit" doc:id="8684e60c-c85d-4b29-9144-1a7a1d43fb42" variableName="transfer_limit"/>
 			</otherwise>
 		</choice>
 	</sub-flow>
