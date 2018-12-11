@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<logger level="DEBUG" doc:name="Logger" doc:id="5ae8ecbe-962e-439f-99d7-8452e9003470" message="Debit Account 2"/>
 		<ee:transform doc:name="Transform Message" doc:id="c174aaa2-0a29-4e2b-b6f0-f46bafd14f59" >
 			<ee:message >
-				<ee:set-payload resource="dwl\transfer-fund-response.dwl" />
+				<ee:set-payload resource="dw\transferFund\transfer-fund-response.dwl" />
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
