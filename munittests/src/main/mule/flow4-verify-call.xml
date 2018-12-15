@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="flow4-verify-callFlow" doc:id="56e6352d-3b98-4071-a1d0-295dc3d3da87" >
+		<http:listener doc:name="Listener" doc:id="ddf95baf-b4e5-4c3b-a60d-f33e8464f4e4" config-ref="HTTP_Listener_common_config" path="/flow4"/>
+		<flow-ref doc:name="FlowReference" doc:id="ea1ccc37-68cb-45d6-a9f3-4a4e92e05482" name="flow4-verify-callFlow1"/>
+	</flow>
+	<flow name="flow4-verify-callFlow1" doc:id="bf8620ad-f865-4a4d-9c35-5d8b38fded0e" >
+		<set-payload value="#[payload]" doc:name="SetPayload" doc:id="44782c33-601e-4f05-8a00-292588078d6b" />
+	</flow>
+</mule>

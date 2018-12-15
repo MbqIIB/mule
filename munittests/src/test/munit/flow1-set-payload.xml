@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="flow1_can_be_mocked-test-suite.xml" />
+	<munit:test name="flow1_can_be_mocked-test-suite-flow1_can_be_mockedFlowTest" description="Test" doc:id="26dd8501-b373-43bf-aca8-a0463a67fa4f" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="1c4d8d50-980b-4653-aa68-2e6d8cf2dcea" processor="set-payload">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="SetPayload2" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#['mock value']" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to flow1_can_be_mockedFlow" doc:id="59cd2e17-5c42-427f-9d35-61cfe7547a03" name="flow1-set-payload-Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="16a773c6-13b9-4ae1-a242-116b05c2cc80" expression="#[payload]" is="#[MunitTools::equalTo('mock value')]" message="#['Expected payload value &quot;mock value&quot; but found ' ++ payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

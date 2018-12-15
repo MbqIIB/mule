@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="flow5-spyFlow" doc:id="7f36e2ed-9f16-46c2-a511-8163a6b94e2c" >
+		<http:listener doc:name="Listener" doc:id="ce60c334-caa7-4ce8-ac5b-e17fdf0b7a56" config-ref="HTTP_Listener_common_config" path="/flow5"/>
+		<set-payload value="test1" doc:name="SetPayload1" doc:id="c88560b0-8ab9-4983-8493-24e7fffd52ec" />
+		<set-payload value="test2" doc:name="SetPayload2" doc:id="89f3c0db-ea4a-47e0-8494-199a630f9dcd" />
+	</flow>
+</mule>

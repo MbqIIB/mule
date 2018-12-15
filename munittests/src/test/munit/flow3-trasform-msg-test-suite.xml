@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<munit:config name="flow3-trasform-msg-test-suite.xml" />
+	<munit:test name="flow3-trasform-msg-test-suite-flow3-trasform-msgFlowTest" description="Test" doc:id="4c7d475a-5718-4445-a18d-57f59ac85171" >
+		<munit:execution >
+			<parse-template doc:name="Parse Template" doc:id="a13ccbcb-5c6d-4e1f-8e9f-dc3615104f01" location="F:\projects\mulesoft\mule\munittests\src\test\resources\person_simple.json"/>
+			<set-payload value="#[payload]" doc:name="Set Payload in JSON Format" doc:id="34dc8a7e-027f-45ca-af81-356590f19e92" mimeType="application/json"/>
+			<flow-ref doc:name="Flow-ref to flow3-trasform-msgFlow" doc:id="90c45ca4-f3b3-4d69-9bf7-d9bba1cb0e41" name="flow3-trasform-msgFlow"/>
+			<file:read doc:name="Read Output Payload from File as String" doc:id="7a3577c6-8f4f-414b-8a7f-657bb565e4ea" path="F:\projects\mulesoft\mule\munittests\src\test\resources\person_simple.xml" target="output_payload_from_file" outputMimeType="text/plain" targetValue='#[payload replace "\r\n" with "\n"]'/>
+			<logger level="INFO" doc:name="Logger" doc:id="811f9835-85a6-4a15-94ff-020092c7939e" message="#[payload]"/>
+			<logger level="INFO" doc:name="Logger" doc:id="c733da9e-f4fc-42b6-b741-13c174a3ce60" message="#[vars.output_payload_from_file]"/>
+			<set-variable value="#[payload]" doc:name="Output Payload from Flow as String" doc:id="2ba22141-1a31-441e-9ffa-ef554f8476db" variableName="output_payload_from_flow" mimeType="text/plain"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="33ffbbca-f6ee-4d06-84b5-bb9d00997449" expression="#[vars.output_payload_from_flow]" is='#[MunitTools::equalTo(vars.output_payload_from_file)]' message="#['Excepted ' ++ vars.output_payload_from_file
+++ ' but found ' ++ vars.output_payload_from_flow]" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

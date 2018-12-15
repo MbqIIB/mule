@@ -7,16 +7,14 @@
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
-	<munit:config name="new-test-suite.xml" />
-	<munit:test name="new-test-suite-munittestsFlowTest1" description="Test" doc:id="665a6079-3be4-4ffa-8be6-9725910bec68" >
+	<munit:config name="simple-flow-test-suite.xml" />
+	<munit:test name="simple-flow-test-suite-simple-flowFlowTest" description="Test" doc:id="245795a1-1503-423a-880e-a9271f33569e" >
 		<munit:execution >
-			<munit:set-event doc:name="Set Event" doc:id="88dc67b8-52db-4f38-b359-e6a921364867">
-				<munit:variables >
-					<munit:variable key="item_id" value="100" />
-				</munit:variables>
-			</munit:set-event>
-			<flow-ref doc:name="Flow-ref to munittestsFlow" doc:id="d484cbc0-2f3f-4943-b4cc-a3dba9d15330" name="munittestsFlow"/>
+			<flow-ref doc:name="Flow-ref to simple-flowFlow" doc:id="5a1ba675-a3ce-497e-8e50-26ee92746efa" name="simple-flowFlow"/>
 		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="baa7094d-adcd-4d78-acf2-f393396ecd96" expression="#[payload]" is="#[MunitTools::equalTo('test')]" message="#['Expected test but found ' ++ payload ++ '.']"/>
+		</munit:validation>
 	</munit:test>
 
 

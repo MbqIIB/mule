@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="flow6-example-wishnetwork-test-suite.xml" />
+
+       <munit:test name="secondaryFlowTest_1" description="MUnit Test">
+
+              <munit:execution >
+
+                     <munit:set-event doc:name="Set Message payload == payload_1">
+
+                           <munit:payload value="#['payload_1']" />
+
+                     </munit:set-event>
+
+                     <flow-ref name="secondaryFlow" doc:name="secondaryFlow" />
+
+              </munit:execution>
+
+              <munit:validation >
+
+                     <munit-tools:assert-that expression="#[vars.flowValue]" is="#[MunitTools::equalTo('flowValue_1')]" doc:name="Assert payload"/>
+
+                     <munit-tools:verify-call processor="mule:flow-ref" doc:name="Verify call"  times="1">
+
+                           <munit-tools:with-attributes>
+
+                                  <munit-tools:with-attribute attributeName="name" whereValue="#['firstSubFlow']" />
+
+                           </munit-tools:with-attributes>
+
+                     </munit-tools:verify-call>
+
+              </munit:validation>
+
+       </munit:test>
+
+       <munit:test name="secondaryFlowTest_2" description="MUnit Test">
+
+              <munit:execution >
+
+                     <munit:set-event doc:name="Set Message payload == payload_2">
+
+                           <munit:payload value="#['payload_2']" />
+
+                     </munit:set-event>
+
+                     <flow-ref name="secondaryFlow" doc:name="secondaryFlow"/>        
+
+              </munit:execution>
+
+              <munit:validation >
+
+                     <munit-tools:assert-that expression="#[vars.flowValue]" is="#[MunitTools::equalTo('flowValue_2')]" doc:name="Assert payload"/>
+
+                     <munit-tools:verify-call processor="mule:flow-ref" doc:name="Verify call"  times="1">
+
+                           <munit-tools:with-attributes >
+
+                                  <munit-tools:with-attribute attributeName="name" whereValue="#['secondSubFlow']" />
+
+                           </munit-tools:with-attributes>
+
+                     </munit-tools:verify-call>             
+
+              </munit:validation>
+
+       </munit:test>
+
+       <munit:test name="functionalTest_mainFlow_1" description="MUnit Test">
+
+              <munit:execution >
+
+                     <munit:set-event doc:name="Set Query Parameter url_key=payload_1">
+
+                           <munit:payload value="#['']" />
+
+                           <munit:attributes value="#[{queryParams: {url_key: 'payload_1'}}]" />
+
+                     </munit:set-event>
+
+                     <flow-ref name="mainFlow" doc:name="mainFlow"/>
+
+              </munit:execution>
+
+              <munit:validation >
+
+                     <munit-tools:assert-that expression="#[vars.flowValue]" is="#[MunitTools::equalTo('flowValue_1')]" doc:name="Assert payload"/>
+
+              </munit:validation>
+
+       </munit:test>
+
+       <munit:test name="functionalTest_mainFlow_2" description="MUnit Test">
+
+              <munit:execution >
+
+                     <munit:set-event doc:name="Set Query Parameter url_key=payload_2">
+
+                           <munit:payload value="#['']" />
+
+                           <munit:attributes value="#[{queryParams: {url_key: 'payload_2'}}]" />
+
+                     </munit:set-event>
+
+                     <flow-ref name="mainFlow" doc:name="mainFlow"/>
+
+              </munit:execution>
+
+              <munit:validation >
+
+                     <munit-tools:assert-that expression="#[vars.flowValue]" is="#[MunitTools::equalTo('flowValue_2')]" doc:name="Assert payload"/>
+
+              </munit:validation>
+
+       </munit:test>
+
+       <munit:test name="test_withMock_1" description="MUnit Test">
+
+              <munit:behavior >
+
+                     <munit-tools:mock-when processor="mule:set-payload" doc:name="Mock when">
+
+                           <munit-tools:with-attributes >
+
+                                  <munit-tools:with-attribute attributeName="doc:name" whereValue="#[&quot;Set query param 'url_key' to payload&quot;]" />
+
+                           </munit-tools:with-attributes>
+
+                           <munit-tools:then-return >
+
+                                  <munit-tools:payload value="#['']" />
+
+                           </munit-tools:then-return>
+
+                     </munit-tools:mock-when>
+
+                     <munit-tools:mock-when processor="mule:flow-ref" doc:name="Mock when">
+
+                           <munit-tools:with-attributes >
+
+                                  <munit-tools:with-attribute attributeName="name" whereValue="#['secondaryFlow']" />
+
+                           </munit-tools:with-attributes>
+
+                           <munit-tools:then-return >
+
+                                  <munit-tools:payload value="#['']" />
+
+                                  <munit-tools:variables >
+
+                                         <munit-tools:variable key="flowValue" value="#['flowValue_1']" />
+
+                                  </munit-tools:variables>
+
+                           </munit-tools:then-return>
+
+                     </munit-tools:mock-when>
+
+              </munit:behavior>
+
+              <munit:execution >
+
+                     <flow-ref name="mainFlow" doc:name="mainFlow"/>
+
+              </munit:execution>
+
+              <munit:validation >
+
+                     <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('responsePayload_1')]" doc:name="Assert that"/>
+
+              </munit:validation>
+
+       </munit:test>
+
+       <munit:test name="test_withMock_2" description="MUnit Test">
+
+              <munit:behavior >
+
+                     <munit-tools:mock-when processor="mule:set-payload" doc:name="Mock when">
+
+                           <munit-tools:with-attributes >
+
+                                  <munit-tools:with-attribute attributeName="doc:name" whereValue="#[&quot;Set query param 'url_key' to payload&quot;]" />
+
+                           </munit-tools:with-attributes>
+
+                           <munit-tools:then-return >
+
+                                  <munit-tools:payload value="#['']" />
+
+                           </munit-tools:then-return>
+
+                     </munit-tools:mock-when>
+
+                     <munit-tools:mock-when processor="mule:flow-ref" doc:name="Mock when">
+
+                           <munit-tools:with-attributes >
+
+                                  <munit-tools:with-attribute attributeName="name" whereValue="#['secondaryFlow']" />
+
+                           </munit-tools:with-attributes>
+
+                           <munit-tools:then-return >
+
+                                  <munit-tools:payload value="#['']" />
+
+                                  <munit-tools:variables >
+
+                                         <munit-tools:variable key="flowValue" value="#['flowValue_2']" />
+
+                                  </munit-tools:variables>
+
+                           </munit-tools:then-return>
+
+                     </munit-tools:mock-when>        
+
+              </munit:behavior>
+
+              <munit:execution >
+
+                     <flow-ref name="mainFlow" doc:name="mainFlow"/>
+
+              </munit:execution>
+
+              <munit:validation >
+
+                     <munit-tools:assert-that expression="#[payload]" is="#[MunitTools::equalTo('responsePayload_2')]" doc:name="Assert that"/>
+
+              </munit:validation>
+       </munit:test>
+</mule>

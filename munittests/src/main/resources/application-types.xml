@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="p_json" format="json">
+      <types:shape format="weave" example="examples/person-2.json"><![CDATA[%dw 2.0
+type p_json = {|
+  status: Array<{|
+    person: {|
+      firstname: String, 
+      lastname: String, 
+      city: String, 
+      hobby: String
+    |}
+  |}>
+|} {"MetadataFormat": "json",
+"example": "{\"status\":[{\"person\":{\"firstname\":\"Mariano\",\"lastname\":\"De achaval\",\"city\":\"Dallas\",\"hobby\":\"Baseball\"}},{\"person\":{\"firstname\":\"William\",\"lastname\":\"Troy\",\"city\":\"New york\",\"hobby\":\"WWE\"}}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="p_csv" format="csv">
+      <types:shape format="weave" example="person.csv"><![CDATA[%dw 2.0
+type p_csv = Array<{|
+  Name: String, 
+  "Last Name": String, 
+  City: String, 
+  Hobby: String
+|}> {"MetadataFormat": "csv"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="p_xml" format="xml">
+      <types:example format="xml" element="state" location="examples/person-4.xml"/>
+    </types:type>
+    <types:type name="p_simple_json" format="json">
+      <types:shape format="weave" example="examples/person_simple.json"><![CDATA[%dw 2.0
+type p_simple_json = {|
+  person: {|
+    firstname: String, 
+    lastname: String, 
+    city: String, 
+    hobby: String
+  |}
+|} {"MetadataFormat": "json",
+"example": "{\"person\":{\"firstname\":\"Mariano\",\"lastname\":\"De achaval\",\"city\":\"Dallas\",\"hobby\":\"Baseball\"}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="p_simple_xml" format="xml">
+      <types:example format="xml" element="person" location="examples/person_simple.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#957da5a4-f61f-4452-bd70-1cdd904acba0">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="p_simple_json"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="p_simple_xml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a13ccbcb-5c6d-4e1f-8e9f-dc3615104f01">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="p_simple_json"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

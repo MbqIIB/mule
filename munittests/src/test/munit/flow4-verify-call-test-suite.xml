@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="flow4-invoke-flow-test-suite.xml" />
+	<munit:test name="flow4-invoke-flow-test-suite-flow4-invoke-flowFlowTest" description="Test" doc:id="b68f326a-00d0-4aa8-937c-cae62528b3d3" >
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to flow4-invoke-flowFlow" doc:id="53161f00-4a33-465c-b341-1b49295507fb" name="flow4-verify-callFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="184baf3e-4b70-4d84-a3f7-506c3d388aa5" processor="mule:flow-ref" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="ea1ccc37-68cb-45d6-a9f3-4a4e92e05482" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call" doc:id="d6c750a7-220d-4708-8982-7a9b0bc458c8" processor="mule:set-payload" times="1" atLeast="1" atMost="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="SetPayload" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

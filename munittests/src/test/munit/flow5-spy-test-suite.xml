@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="flow5-spy-test-suite.xml" />
+	<munit:test name="flow5-spy-test-suite-flow5-spyFlowTest" description="Test" doc:id="5212b37c-875f-4950-a007-8e566e1d7301" >
+		<munit:behavior >
+			<munit-tools:spy doc:name="Spy" doc:id="2486c59b-4190-4a78-8561-48aa1b805309" processor="mule:set-payload">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="SetPayload2" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<logger level="INFO" doc:name="Logger" doc:id="d782a611-f2c0-4b6a-a76e-8338f529f2cb" message="Before call #[payload]"/>
+					<munit-tools:assert-that doc:name="Assert that" doc:id="5c9760fb-f642-47a3-8ede-8dd2653d1bc2" expression="#[payload]" is="#[MunitTools::equalTo('test1')]" message="#['Expected test1 but found ' ++ payload]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<logger level="INFO" doc:name="Logger" doc:id="b6452311-8d37-4214-b522-a000179fa60d" message="After call #[payload]"/>
+					<munit-tools:assert-that doc:name="Assert that" doc:id="448534a0-9fb2-4f17-a9b3-988c583f5caf" expression="#[payload]" is="#[MunitTools::equalTo('test2')]" message="#['Expected test2 but found ' ++ payload]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to flow5-spyFlow" doc:id="f8bf1ad8-4f29-4680-b51d-4dae47ed88f6" name="flow5-spyFlow"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

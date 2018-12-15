@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="munittests-test-suite.xml" />
+	<munit:test name="munittests-test-suite-munittestsFlowTest" description="Test" doc:id="0db1bac2-3c26-4123-9073-92b49a815527" >
+		<munit:execution >
+			<munit:set-event doc:name="Set Payload and Query Param" doc:id="8140ca72-104d-42cb-a274-9722fc7b954b" >
+				<munit:payload value='{"status": "success"}' mediaType="application/json" />
+				<munit:attributes value="#[{queryParams: {item_id: '100'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to munittestsFlow" doc:id="5915986e-0225-4ca1-8412-0eb07c008650" name="munittestsFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6ecb5193-9485-4f98-86af-2d92e5ba2207" expression="#[payload]" is="#[MunitTools::equalTo('success')]" message="#['Excepted &quot;success&quot; but found ' ++ payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

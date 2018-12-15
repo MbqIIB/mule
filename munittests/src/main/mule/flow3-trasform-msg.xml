@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<flow name="flow3-trasform-msgFlow" doc:id="a0af1834-1926-488d-aa33-5d543f74e278" >
+		<http:listener doc:name="Listener" doc:id="09dc827d-9c85-45f8-9669-7d4ffd40ed35" config-ref="HTTP_Listener_common_config" path="/flow3" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ea9d113d-bf4d-44ee-8f26-94f29f76ed19" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="957da5a4-f61f-4452-bd70-1cdd904acba0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml  indent=true, encoding="UTF-8"
+---
+{
+	person: {
+		firstName: payload.person.firstName,
+		lastName: payload.person.lastName,
+		city: payload.person.city,
+		hobby: payload.person.hobby
+	}
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="0c33ffe9-3c64-4c24-86fd-58c434a968f3" message="#[payload]"/>
+	</flow>
+</mule>
