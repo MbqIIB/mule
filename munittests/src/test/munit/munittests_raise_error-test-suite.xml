@@ -20,7 +20,7 @@
 			<munit-tools:assert-that doc:name="Assert that" doc:id="6ecb5193-9485-4f98-86af-2d92e5ba2207" expression="#[payload]" is="#[MunitTools::equalTo('success')]" message="#['Excepted &quot;success&quot; but found ' ++ payload]"/>
 		</munit:validation>
 	</munit:test>
-	<munit:test name="munittests-test-suiteTest" description="MUnit Test" doc:id="523ca51a-9008-46b6-8667-58165292fc1f" >
+	<munit:test name="munittests-test-suiteTest" description="MUnit Test" doc:id="523ca51a-9008-46b6-8667-58165292fc1f">
 		<munit:execution >
 			<munit:set-event doc:name="Set Payload and Query Param" doc:id="0cd59332-ba71-43bf-9395-cc7fc2c87d4d" >
 				<munit:payload value='{"status": "success"}' mediaType="application/json" />
@@ -31,6 +31,15 @@
 		<munit:validation >
 			<munit-tools:assert-that doc:name="Assert that" doc:id="842c55fb-34ec-42e2-b3b2-46c28c9acf47" expression="#[payload]" is="#[MunitTools::equalTo('Not Sure')]" message="#['Excepted &quot;success&quot; but found ' ++ payload]"/>
 		</munit:validation>
+	</munit:test>
+	<munit:test name="munittests-test-suiteTest1" description="MUnit Test" doc:id="63d5482f-a2c9-473f-afae-a9f15bf7dad7" expectedErrorType="EMPLOYEE:INVALIDATE_ID">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1c265cc8-60a7-4c47-bdf4-688b22a7a6cb" >
+				<munit:payload value='{"status": "success"}' />
+				<munit:attributes value="#[{queryParams: {item_id: '000'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to munittestsFlow" doc:id="662581f1-100b-48c9-894d-cb9a3de26da1" name="munittestsFlow"/>
+		</munit:execution>
 	</munit:test>
 
 

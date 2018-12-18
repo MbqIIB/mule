@@ -22,6 +22,10 @@ payload.status]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 			</when>
+			<when expression='#[vars.item_id == "000"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="22413119-fff8-4927-b1f8-c83e92d496fe" message="#[vars.item_id]"/>
+				<raise-error doc:name="Raise error" doc:id="5818a6ed-0a2d-41fd-8b7d-4511835541a6" type="EMPLOYEE:INVALIDATE_ID" description="#['ID  $(vars.item_id) is invalid.']"/>
+			</when>
 			<otherwise >
 				<ee:transform doc:name="Transform Message" doc:id="584608c7-5045-47c8-ae7d-e46e5f4db3c4" >
 					<ee:message >
@@ -33,5 +37,10 @@ output application/java
 				</ee:transform>
 			</otherwise>
 		</choice>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b8330cdd-bce2-4c75-853f-ee5038b53cb8" type="EMPLOYEE:INVALIDATE_ID">
+				<logger level="INFO" doc:name="Logger" doc:id="92fa823c-d2c7-491f-b172-600256328ee7" message="Error occurred : #[error.description]" />
+			</on-error-propagate>
+		</error-handler>
 	</flow>
 </mule>
