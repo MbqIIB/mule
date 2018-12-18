@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="flow7-derby-dbFlow" doc:id="94ca82a5-8a0c-4452-b1c1-f532e440485c" >
+		<http:listener doc:name="Listener" doc:id="4e5f34ec-3026-45eb-a62e-fa74d467f980" config-ref="HTTP_Listener_common_config" path="/flow7"/>
+		<set-variable value="#['executionTimeStamp:' ++ now()]" doc:name="Set Execution Time detail" doc:id="98736bdc-465e-44e7-925f-0506b6d488f9" variableName="executionTimeStamp"/>
+		<logger level="INFO" doc:name="Logger" doc:id="88520ad6-ebf8-433a-ba6b-61c46e86a297" message="#[vars.executionTimeStamp]"/>
+		<db:insert doc:name="Audit Log to CALL_LOG table" doc:id="c0cc8de7-2412-4ab0-9aac-9d6e262bd774" config-ref="Database_Config">
+			<db:sql >INSERT INTO CALL_LOG (LOG_STRING) values (:log_string )</db:sql>
+			<db:input-parameters ><![CDATA[#[{'log_string' : vars.executionTimeStamp}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="06b039b7-f2d8-4881-a6a1-48cb7e03ff51">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	rowsinserted: payload.affectedRows
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Audit Result" doc:id="ac3e8491-4c64-439f-bc78-105d2f27cc0c" message="Payload After Log to LOG_STRING table : #[payload]"/>
+		<db:select doc:name="Select Employees" doc:id="32c673bb-81a8-4b72-a843-fd7632bd58e4" config-ref="Database_Config">
+			<db:sql >select * from employees</db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="29645dff-c335-4d93-a469-4a65cc87f879" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

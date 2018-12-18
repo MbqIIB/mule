@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="57ad5021-d861-456e-b056-25c06a026e1a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="groovy-scriptFlow" doc:id="05b7e3c2-8c37-4c04-8540-406d46b96139" >
+		<http:listener doc:name="Listener" doc:id="2249eacc-ee0d-4819-85df-6c3d0977ad3e" config-ref="HTTP_Listener_config" path="/groovy"/>
+				<set-variable value="#[attributes.queryParams.name]" doc:name="Set Variable" doc:id="0652ddad-ab75-4007-ac9e-62413c3eae98" variableName="name"/>
+		<scripting:execute doc:name="Using Variables" doc:id="6ef21845-2ced-4b4e-9b2e-46c83386691d" engine="groovy">
+			<scripting:code >&quot;Hello There! &quot; + vars.name</scripting:code>
+		</scripting:execute>
+		<logger level="INFO" doc:name="Logger" doc:id="2945c00a-a28c-4b02-af4b-59cba7f92642" message="#[payload]" />
+		<scripting:execute engine="groovy" doc:name="Stop Execution" doc:id="1e4100f4-f8fa-4612-a8d4-f1caca214427" >
+			<scripting:code >sleep(20000)</scripting:code>
+		</scripting:execute>
+		<scripting:execute engine="groovy" doc:name="Using Parameters" doc:id="09c1295f-108f-42e4-b9d7-7dfba6447b25" >
+			<scripting:code >&quot;Hello There!!! &quot; + name</scripting:code>
+			<scripting:parameters ><![CDATA[#[{name: vars.name}]]]></scripting:parameters>
+		</scripting:execute>
+		<logger level="INFO" doc:name="Log Greeting" doc:id="3f191e6b-8d25-4249-9f66-a832a769bf37" message="#[payload]" />
+		<scripting:execute doc:name="Target Variable" doc:id="3bc2d69b-f124-4171-bb40-e7a628d6e2bd" engine="groovy" target="greeting">
+			<scripting:code >&quot;Hello There!!!(target) &quot; + name</scripting:code>
+			<scripting:parameters ><![CDATA[#[{name: vars.name}]]]></scripting:parameters>
+		</scripting:execute>
+		<logger level="INFO" doc:name="Logger" doc:id="7d1b4b76-6e67-45fd-b301-3c82b9a2c816" message="#[vars.greeting]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8a6a3339-628a-49fe-85bf-8fe79a8662d0" message="#[payload]"/>
+		<scripting:execute engine="groovy" doc:name="From File" doc:id="babd0574-a1c1-4b1a-8fe2-06a3c046231c" >
+			<scripting:code >${file::greet.groovy}</scripting:code>
+			<scripting:parameters ><![CDATA[#[{name: vars.name}]]]></scripting:parameters>
+		
+</scripting:execute>
+	</flow>
+</mule>

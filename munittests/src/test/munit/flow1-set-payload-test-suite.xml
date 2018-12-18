@@ -7,8 +7,8 @@
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
-	<munit:config name="flow1_can_be_mocked-test-suite.xml" />
-	<munit:test name="flow1_can_be_mocked-test-suite-flow1_can_be_mockedFlowTest" description="Test" doc:id="26dd8501-b373-43bf-aca8-a0463a67fa4f" >
+	<munit:config name="flow1_set-payload-test-suite.xml" />
+	<munit:test name="flow1_can_be_mocked-test-suiteFlowTest" description="Test" doc:id="26dd8501-b373-43bf-aca8-a0463a67fa4f" >
 		<munit:behavior >
 			<munit-tools:mock-when doc:name="Mock when" doc:id="1c4d8d50-980b-4653-aa68-2e6d8cf2dcea" processor="set-payload">
 				<munit-tools:with-attributes >

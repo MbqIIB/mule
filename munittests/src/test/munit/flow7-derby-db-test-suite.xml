@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+	<munit:config name="flow7-derby-db-test-suite.xml" />
+	<import doc:name="Import" doc:id="812d2642-dc3f-4e2b-8f40-fe9b2ddfb1b1" file="common-config.xml" />
+	<munit:test name="flow7-derby-db-test-suite-flow7-derby-dbFlowTest" description="Test without mock db insert" doc:id="83369507-5977-41a5-b6f1-9478248c3b1d" ignore="true">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="d81fb174-412f-4e2b-881b-cb2d93eda999" >
+				<munit:payload value="#['']" />
+				<munit:variables >
+					<munit:variable key="http.request" value="/flow7" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to flow7-derby-dbFlow" doc:id="509915f9-9467-49c7-bc43-b7551506248b" name="flow7-derby-dbFlow"/>
+			<file:read doc:name="Read" doc:id="2dc6c76c-989d-4328-bf33-e5dd6334fc3e" path="F:\projects\mulesoft\mule\munittests\src\test\resources\result_employees.json" target="expectedResultEmployees" outputMimeType="text/plain" targetValue='#[payload replace "\r\n" with "\n"]'/>
+			<set-variable value="#[payload]" doc:name="Set Variable" doc:id="eb58b76b-e14a-4fc7-8868-c018cf66c934" variableName="resultEmployees" mimeType="text/plain"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="a6d812fe-8ac4-492e-a508-664f30a18b84" expression="#[vars.resultEmployees]" is="#[MunitTools::equalTo(vars.expectedResultEmployees)]" message="#['Excepted ' ++ vars.expectedResultEmployees ++ ' but found ' ++ vars.resultEmployees]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="flow7-derby-db-test-suiteTest" description="MUnit Test" doc:id="068213e7-9f08-4cac-91e7-92b00e51d6cf" ignore="true">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c2a735ea-bf25-4dee-a3ef-f4745334a025" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Audit Log to CALL_LOG table" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[%dw 2.0
+output application/json
+---
+{
+	affectedRows: "1"
+
+}]' mediaType="application/json" encoding="UTF-8"/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3c1b6259-1ca8-46c4-9d7a-470f4f973920" >
+				<munit:payload value="#['']" />
+				<munit:variables >
+					<munit:variable key="http.request" value="/flow7" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to flow7-derby-dbFlow" doc:id="ab53ff08-8945-47a8-8ae8-6b133ed8dd13" name="flow7-derby-dbFlow"/>
+			<file:read doc:name="Read" doc:id="3e84e632-1f1f-46ea-904b-fdf16956299e" path="F:\projects\mulesoft\mule\munittests\src\test\resources\result_employees.json" target="expectedResultEmployees" outputMimeType="text/plain" targetValue='#[payload replace "\r\n" with "\n"]'/>
+			<set-variable value="#[payload]" doc:name="Set Variable" doc:id="aa0ec9da-72e2-4661-9086-51317139d036" variableName="resultEmployees" mimeType="text/plain"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="015acbc2-594f-4bcb-a81a-a4c2e2d7e233" expression="#[vars.resultEmployees]" is="#[MunitTools::equalTo(vars.expectedResultEmployees)]" message="#['Excepted ' ++ vars.expectedResultEmployees ++ ' but found ' ++ vars.resultEmployees]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="flow7-derby-db-complete-mock-test-suiteTest" description="MUnit Test" doc:id="89ff827a-e8e8-459e-aac0-d25b543dbe6c" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="fde6f19a-d5de-4773-ba7a-d61b6dded5e8" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Audit Log to CALL_LOG table" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[%dw 2.0
+output application/json
+---
+{
+	affectedRows: "1"
+
+}]' mediaType="application/json" encoding="UTF-8"/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<scripting:execute engine="groovy" doc:name="Execute" doc:id="da5a2f38-81b0-4228-837a-24c2d29ee8e2" >
+				<scripting:code >import org.mule.util.CaseInsensitiveHashMap;
+LinkedList&lt;CaseInsensitiveHashMap&lt;String, String&gt;&gt; rSet = new
+LinkedList&lt;CaseInsensitiveHashMap&lt;String, String&gt;&gt;();
+CaseInsensitiveHashMap&lt;String, String&gt; rowDataMap = new
+CaseInsensitiveHashMap&lt;String, String&gt;();
+rowDataMap.put(“ADDRESS2”, “Romeoville IL 60446”);
+rowDataMap.put(“UID”, “1000”);
+rowDataMap.put(“ADDRESS1”, “13546 State Route 30”);
+rowDataMap.put(“SERVICES”, “Gift Cards”);
+rSet.add(rowDataMap);
+return rSet;</scripting:code>
+			</scripting:execute>
+			<logger level="INFO" doc:name="Logger" doc:id="98021fe5-750e-47b2-9b21-889b225ea282" message="#[payload]"/>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="1d9d5ce1-cbb6-41cd-be04-96ff08839aff" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Select Employees" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[payload]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		
+</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="0fb342f2-5104-4246-9e55-59b0944ecca3" >
+				<munit:payload value="#['']" />
+				<munit:variables >
+					<munit:variable key="http.request" value="/flow7" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to flow7-derby-dbFlow" doc:id="84d14851-ef33-44e7-a54e-f19569fd38c4" name="flow7-derby-dbFlow"/>
+			<file:read doc:name="Read" doc:id="c19a654e-5d26-49ce-8dc1-67d943002a27" path="F:\projects\mulesoft\mule\munittests\src\test\resources\result_employees.json" target="expectedResultEmployees" outputMimeType="text/plain" targetValue='#[payload replace "\r\n" with "\n"]'/>
+			<set-variable value="#[payload]" doc:name="Set Variable" doc:id="d94055e8-2233-439c-9ce3-227e3ec712e8" variableName="resultEmployees" mimeType="text/plain"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="be1d468b-8776-4afe-8258-e18e24de4670" expression="#[vars.resultEmployees]" is="#[MunitTools::equalTo(vars.expectedResultEmployees)]" message="#['Excepted ' ++ vars.expectedResultEmployees ++ ' but found ' ++ vars.resultEmployees]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
