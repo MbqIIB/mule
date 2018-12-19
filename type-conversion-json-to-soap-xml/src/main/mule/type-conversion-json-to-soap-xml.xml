@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="aeed2649-c025-42c5-952f-6a97fd5cef42" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="type-conversion-json-to-soap-xmlFlow" doc:id="c82b4958-1f65-400d-853b-814c97a9a18c" >
+		<http:listener doc:name="Listener" doc:id="eb09f544-6f90-4657-88c9-9b682cf72011" config-ref="HTTP_Listener_config" path="/soap" allowedMethods="POST" doc:description='{
+	"tickerId": "hp",
+	"company": "Hewlett Packard"
+}'/>
+		<set-variable value="#['S']" doc:name="Market" doc:id="6b0522a7-c0ef-424b-b52b-d023b5ada95f" variableName="marketId"/>
+		<ee:transform doc:name="Transform Message" doc:id="c353e65a-98c8-4602-865d-32ca1d9b546f" >
+			<ee:message >
+				<ee:set-payload resource="dw/transform-to-soap1.dwl" />
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

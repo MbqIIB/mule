@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="57ad5021-d861-456e-b056-25c06a026e1a" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
@@ -35,5 +36,20 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 			<scripting:parameters ><![CDATA[#[{name: vars.name}]]]></scripting:parameters>
 		
 </scripting:execute>
+	</flow>
+	<flow name="groovy-scriptFlow1" doc:id="92460a32-d746-48e4-a15d-f37f558bb750" >
+		<http:listener doc:name="Listener" doc:id="11adc964-7e40-4f34-b3a7-dc37ffd286b2" config-ref="HTTP_Listener_config" path="/groovy1"/>
+		<scripting:execute engine="groovy" doc:name="getEmployees" doc:id="95bc830f-467d-40e6-b0a6-197df69b01e9" >
+			<scripting:code >${file::employee.groovy}</scripting:code>
+		</scripting:execute>
+		<ee:transform doc:name="Transform Message" doc:id="a2d139a2-e910-4d8b-8fbe-19c6e40f41fb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Employees" doc:id="2921e176-b3d8-416f-ab26-43bc3ddf03e3" message="#[payload]"/>
 	</flow>
 </mule>
