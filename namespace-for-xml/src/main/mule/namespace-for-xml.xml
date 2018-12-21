@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="aaece965-da41-4b89-b1b0-ed3c554d8801" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="cf668e7f-0f31-4938-a5e5-68a59bcfe717" basePath="/calculator.asmx" >
+		<http:request-connection host="dneonline.com" />
+	</http:request-config>
+	<flow name="namespace-for-xmlFlow" doc:id="da7dca48-94d0-4dd2-913c-d4383520fd7a" >
+		<http:listener doc:name="Listener" doc:id="87e111a8-2954-4f94-9252-aebeb35c913c" config-ref="HTTP_Listener_config" path="/ns"/>
+		<logger level="INFO" doc:name="Logger" doc:id="3367a88d-294a-4849-9df1-754ca92cfaca" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="28610d12-52f5-4424-8af2-d78824ba7fda" >
+			<ee:message >
+				<ee:set-payload resource="dw/add.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="2f6bd332-66b6-4827-bcb2-ab126d49920e" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request" doc:id="bb345412-f668-4ea8-9c2a-807bda61a645" config-ref="HTTP_Request_configuration" url="http://dneonline.com/calculator.asmx">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"SOAPAction" : "http://tempuri.org/Add"
+}]]]></http:headers>
+		</http:request>
+	</flow>
+	<flow name="namespace-for-xmlFlow1" doc:id="ac9a6e91-4153-4dc9-96ca-4dd825edace6" >
+		<http:listener doc:name="Listener" doc:id="a1fda2ef-87df-4a13-980f-4a807751c05b" config-ref="HTTP_Listener_config" path="ns2"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c34c9401-2229-46d1-9679-540455df0f2e" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="3055c28d-6d68-4cf3-85a9-232cfda5951f" >
+			<ee:message >
+				<ee:set-payload resource="dw/add2.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="007c643c-aa8f-47be-a057-1b25dd324978" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request" doc:id="7fc2d3d2-2c3b-492a-beb7-43f97c57d118" config-ref="HTTP_Request_configuration" url="http://dneonline.com/calculator.asmx">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"SOAPAction" : "http://tempuri.org/Add"
+}]]]></http:headers>
+		</http:request>
+	</flow>
+</mule>

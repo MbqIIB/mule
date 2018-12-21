@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:slack="http://www.mulesoft.org/schema/mule/slack"
+	xmlns:dev-rel-quick-start-products-api="http://www.mulesoft.org/schema/mule/dev-rel-quick-start-products-api"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/dev-rel-quick-start-products-api http://www.mulesoft.org/schema/mule/dev-rel-quick-start-products-api/current/mule-dev-rel-quick-start-products-api.xsd
+http://www.mulesoft.org/schema/mule/slack http://www.mulesoft.org/schema/mule/slack/current/mule-slack.xsd">
+	<salesforce:sfdc-config name="Salesforce_Config"
+		doc:name="Salesforce Config" doc:id="c314e93a-2933-4e58-ac92-155d410d1944">
+		<salesforce:basic-connection username="mulesoft"
+			password="mulesoft"
+			url="http://salesforce-emulator.cloudhub.io/services/Soap/u/41.0" />
+	</salesforce:sfdc-config>
+	<dev-rel-quick-start-products-api:config
+		name="DevRel_Quick_Start_Products_API_Config" doc:name="DevRel-Quick Start Products API Config"
+		doc:id="cdd06b8e-32c0-4bd5-98f3-548dcc2245a0" property_username="mulesoft"
+		property_password="mulesoft" />
+	<slack:config name="Slack_Config" doc:name="Slack Config"
+		doc:id="e4f8e9ed-8677-4bc6-83ee-7fe7eee4c6fc">
+		<slack:token-connection
+			token="securethistokenbeforecommit" />
+	</slack:config>
+	<flow name="slack-connector-exampleFlow" doc:id="02b63460-573d-4af1-af0b-c558aa5861fb">
+		<scheduler doc:name="Schdule Product Leads" doc:id="393f6ec2-fa73-4405-aedc-6e9b9075bf20" doc:description="Every Week on Wednesday at 8:05PM
+0 51 19 ? * WED *
+Asia/Calcutta">
+			<scheduling-strategy>
+				<cron expression="0 05 20 ? * WED *" timeZone="Asia/Calcutta" />
+			
+</scheduling-strategy>
+		</scheduler>
+		<salesforce:query doc:name="Query"
+			doc:id="585f2618-64ad-42b7-888e-02ecb6e37c40" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query>SELECT Id,FirstName,LastName,Company,Email,Phone,Product_Purchased__c FROM Lead</salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message"
+			doc:id="d6ff3199-700f-4861-be1c-26d50a01e16e">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="productLeads"><![CDATA[//Language: java
+// Specify the language as DataWeave 2.0
+%dw 2.0
+// Define the output data type. 
+output application/csv
+// Denote the end of header section and beginning of body where transformation code is written
+---
+// Initialize the variable as an empty list (array)
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="607be09c-5865-41c0-b9be-c89e987e69dd"
+			collection="payload">
+			<dev-rel-quick-start-products-api:get-product-by-product-id
+				doc:name="Get product by product id" doc:id="5a8a311c-643b-411a-a8cb-c0b58555fd23"
+				config-ref="DevRel_Quick_Start_Products_API_Config" product-id="#[payload.Product_Purchased__c]"
+				target="product" />
+			<ee:transform doc:name="Transform Message"
+				doc:id="9894b9b9-fc7c-4449-8067-ed65d98e1e33">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="productLeads"><![CDATA[//Language: java
+%dw 2.0
+output application/csv
+---
+// This sets a default value of an empty array to vars.productLeads just in case it's not set. It will then append the object we want to it.
+(vars.productLeads default []) ++ [
+    {
+        // This is a 1:1 mapping of values from the payload (contains lead data) and product variables
+        //id: payload.Product_Purchased__c,
+        firstName: payload.FirstName,
+        lastName: payload.LastName,
+        company: payload.Company,
+        email: payload.Email,
+        phone: payload.Phone,
+        productModel: vars.product.model,
+        productPrice: vars.product.price.amount.currencyValue,
+        productCurrency: vars.product.price.amount.currency,
+        productDescription: vars.product.description
+    }
+]]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</foreach>
+		<slack:post-message channel='CD04FR75Z' doc:name="Post Product Lead headup message" doc:id="ed4928b4-d8de-4bd7-93e7-ba09d97783a6" config-ref="Slack_Config">
+			<slack:message ><![CDATA[Product Leads of the week will be posted soon...]]></slack:message>
+		</slack:post-message>
+		<ee:transform doc:name="Transform Message" doc:id="293a134d-894c-4529-8924-dc3d658ff615" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="channels" ><![CDATA[%dw 2.0
+output application/java
+---
+["CD04FR75Z"]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<slack:upload-file doc:name="Post Product Leads" doc:id="78fc62e9-ef55-4cff-8520-0a112239dbff" config-ref="Slack_Config" fileName='Product-Lead.csv' title="This week's product leads" fileType="text/csv">
+			<slack:content ><![CDATA[#[vars.productLeads]]]></slack:content>
+			<slack:channels ><![CDATA[#[vars.channels]]]></slack:channels>
+		</slack:upload-file>
+		<logger level="INFO" doc:name="Logger" doc:id="71bf604d-e883-47ef-bb30-d2367d3a9929" message="Thanks."/>
+	
+</flow>
+</mule>

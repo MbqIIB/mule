@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="13ea4c44-c352-47af-9e70-33034e44793a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="b67325c8-f879-457f-a34c-bfcad4a45a0d" basePath="/calculator.asmx" >
+		<http:request-connection host="dneonline.com" />
+	</http:request-config>
+	<flow name="soap-service-call-with-http-requestFlow" doc:id="3ea5062f-f955-4ae6-8713-228e56f2e45d" >
+		<http:listener doc:name="Listener" doc:id="2b70df2b-6e9d-4d2e-a995-684a797c603b" config-ref="HTTP_Listener_config" path="/soap"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a9afe5d3-b32b-4567-b95d-7991fcb0dbeb" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="ba6a3e34-d6d9-4f0a-8375-bad59e5a04cc" >
+			<ee:message >
+				<ee:set-payload resource="dw/add.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="f6c18f7d-d5dc-4e6a-9344-76690b567181" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request" doc:id="987971b8-8da2-4c4c-bc19-01da0ac68a91" config-ref="HTTP_Request_configuration" url="http://dneonline.com/calculator.asmx">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"SOAPAction" : "http://tempuri.org/Add"
+}]]]></http:headers>
+		</http:request>
+	</flow>
+</mule>

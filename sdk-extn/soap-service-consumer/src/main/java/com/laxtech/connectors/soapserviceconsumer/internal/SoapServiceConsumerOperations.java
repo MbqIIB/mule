@@ -17,6 +17,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 import org.mule.runtime.extension.api.annotation.param.MediaType;
+import org.mule.runtime.http.api.HttpService;
 import org.mule.runtime.soap.api.SoapService;
 import org.mule.runtime.soap.api.SoapVersion;
 import org.mule.runtime.soap.api.client.SoapClient;
@@ -42,6 +43,9 @@ public class SoapServiceConsumerOperations {
 
 	@Inject
 	SoapService soapService;
+	
+	@Inject
+	HttpService httpService;
 
 	/**
 	 * Example of an operation that uses the configuration and a connection instance
