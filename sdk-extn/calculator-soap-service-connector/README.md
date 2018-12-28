@@ -1,6 +1,6 @@
-# Soap Service Consumer Extension
+# Calculator Soap Service Connector
 
-Add description ...
+Calculator Soap Service Connector for http://dneonline.com/calculator.asmx service
 
 
 ...
@@ -14,5 +14,5 @@ Add this dependency to your application pom.xml
 ```
 <groupId>com.laxtech.connectors</groupId>
 <artifactId>calculator-soap-service-connector</artifactId>
-<version>1.0.0</version>
+<version>1.1.8</version>
 ```
