@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:calculator-soap-service-connector="http://www.mulesoft.org/schema/mule/calculator-soap-service-connector" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/calculator-soap-service-connector http://www.mulesoft.org/schema/mule/calculator-soap-service-connector/current/mule-calculator-soap-service-connector.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="befa5dd2-b75b-4313-a491-7d1e4ee0913a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+ 	<calculator-soap-service-connector:config name="Calculator_Soap_Service_Connector_Config" doc:name="Soap Service Consumer Config" doc:id="13362e91-6852-4fe1-91a3-34f2fc9e13b6" configId="c1" >
+		<calculator-soap-service-connector:connection token="eqf2" />
+		<calculator-soap-service-connector:soap-client-config wsdlLocation="http://dneonline.com/calculator.asmx?WSDL" service="Calculator" soapVersion="SOAP12" port="CalculatorSoap12"/>
+	</calculator-soap-service-connector:config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="15f54aac-23e4-4ac6-b55c-8a1dfb9a5c45" basePath="/calculator.asmx" >
+		<http:request-connection host="dneonline.com" />
+	</http:request-config>
+	<flow name="sdk-soap-srvc-consumer-usageFlow" doc:id="e93ce035-f79b-4d67-ab4d-6ec455ddbca3" >
+		<http:listener doc:name="Listener" doc:id="833820ed-ab79-4d77-9042-0ae2ab7e5291" config-ref="HTTP_Listener_config" path="/soap_consumer"/>
+		<ee:transform doc:name="Transform Message" doc:id="83f73c0b-3b70-4e36-9cae-587acce01d45" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml encoding="UTF-8"
+---
+{
+//	Body: {
+		Add: {			
+			intA: 5,
+			intB: 15
+		}
+//	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="35ff79e4-79d6-423f-a75c-3a874fee5807" mimeType="text/plain"/>
+		<calculator-soap-service-connector:addition number1="5" number2="24" doc:name="Addition" doc:id="803ced2a-30e9-41ec-9d54-0ef23668f828" config-ref="Calculator_Soap_Service_Connector_Config" operation="Add"/>
+		<ee:transform doc:name="Transform Message" doc:id="2552120c-ae34-4d48-9a53-b1d06f7591da" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	AdditionOfTwoNumbers: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sdk-soap-srvc-consumer-usageFlow2" doc:id="3f092196-e4ac-499b-af7c-09bbc140e769" >
+		<http:listener doc:name="Listener" doc:id="8856b613-8d41-4a34-84f8-8e5c9dffd557" config-ref="HTTP_Listener_config" path="/test"/>
+			<logger level="INFO" doc:name="Logger" doc:id="218c2e52-db4f-4cb1-b0c0-f1e2161c56e1" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="922551c7-2878-40fe-b8d6-83e88d3cfbab" >
+			<ee:message >
+				<ee:set-payload resource="dw/test.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="bb42c3df-21ea-40d3-81d8-27eb81fa3a95" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request" doc:id="01f39e57-589c-4b04-b243-91148b83181e" config-ref="HTTP_Request_configuration" url="http://dneonline.com/calculator.asmx">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"soapaction" : "http://tempuri.org/Add",
+	"host" : "dneonline.com",
+	"content-type" : "text/xml; charset=utf-8",
+	"content-length" : "351"
+}]]]></http:headers>
+		</http:request>
+	</flow>
+	<flow name="sdk-soap-srvc-consumer-usageAddFlow1" doc:id="1749df40-28f5-4177-8c93-954c30639e2b" >
+		<http:listener doc:name="Listener" doc:id="2460d020-eeb2-4077-8189-57ec505530c5" config-ref="HTTP_Listener_config" path="/add" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="5950734b-5772-4463-b174-f04e6a298e2b" >
+			<ee:message >
+				<ee:set-payload resource="dw/add.dwl" />
+			</ee:message>
+		</ee:transform>
+		<calculator-soap-service-connector:request doc:name="Request" doc:id="2a776b45-2408-4d4b-83e4-89d7a6c5f71a" config-ref="Calculator_Soap_Service_Connector_Config" action="Add"/>
+		<logger level="INFO" doc:name="Logger" doc:id="22bfb74e-ea8c-4182-bf76-17e3cc587273" message="#[message]"/>
+		<ee:transform doc:name="Transform Message" doc:id="230fe211-e349-4a23-bd5e-ac13f5f3126d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statuscode: message.attributes.statusCode,
+	reason: message.attributes.reasonPhrase,
+	result: payload.Envelope.Body.AddResponse.AddResult
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sdk-soap-srvc-consumer-usageMultiplyFlow1" doc:id="1a9c5ce0-019d-45ec-a00b-bf632030c2bc" >
+		<http:listener doc:name="Listener" doc:id="c93d3b87-2fa6-48fa-8574-59f0a9d842c8" config-ref="HTTP_Listener_config" path="/multiply"/>
+		<ee:transform doc:name="Transform Message" doc:id="1e4401fa-a9ee-481e-8ecb-8e89e2e3522d" >
+			<ee:message >
+				<ee:set-payload resource="dw/multiply.dwl" />
+			</ee:message>
+		</ee:transform>
+		<calculator-soap-service-connector:request doc:name="Request" doc:id="ade232fc-4c5f-4f99-bbcb-20fcfc3ecc72" config-ref="Calculator_Soap_Service_Connector_Config" action="Multiply"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6f62665d-b8f7-4441-9ea9-cb715dc55af8" message="#[message]" />
+		<ee:transform doc:name="Transform Message" doc:id="88e05647-b6c4-4b1f-99d2-31414fe7067d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statuscode: message.attributes.statusCode,
+	reason: message.attributes.reasonPhrase,
+	result: payload.Envelope.Body.MultiplyResponse.MultiplyResult
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sdk-soap-srvc-consumer-usageDivideFlow3" doc:id="87b71795-ea66-4aa8-b246-e5362b0a9a07" >
+		<http:listener doc:name="Listener" doc:id="f40606d1-3146-41ea-8415-79a69bb2c600" config-ref="HTTP_Listener_config" path="/divide"/>
+		<ee:transform doc:name="Transform Message" doc:id="e4a9604a-64cc-4dc3-8f83-8bba4c639e90" >
+			<ee:message >
+				<ee:set-payload resource="dw/divide.dwl" />
+			</ee:message>
+		</ee:transform>
+		<calculator-soap-service-connector:request doc:name="Request" doc:id="80c75ce7-0999-4fb2-b35a-8a694df3822a" config-ref="Calculator_Soap_Service_Connector_Config" action="Divide"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6eba1257-e206-49c9-b01a-8874dba3743a" message="#[message]" />
+		<ee:transform doc:name="Transform Message" doc:id="1319fd6a-6ad4-4423-9de7-6eb7dd26f1fa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statuscode: message.attributes.statusCode,
+	reason: message.attributes.reasonPhrase,
+	result: payload.Envelope.Body.DivideResponse.DivideResult
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sdk-soap-srvc-consumer-usageSubtractFlow1" doc:id="c8f7c92c-b4c5-4ee3-a9f7-471d9e10adc0" >
+		<http:listener doc:name="Listener" doc:id="7b46235d-c9a7-4fe8-a27c-c6c792f4af7e" config-ref="HTTP_Listener_config" path="/subtract"/>
+		<ee:transform doc:name="Transform Message" doc:id="02cfd2d5-3068-4ff9-b807-17d5159d29fe" >
+			<ee:message >
+				<ee:set-payload resource="dw/subtract.dwl" />
+			</ee:message>
+		</ee:transform>
+		<calculator-soap-service-connector:request doc:name="Request" doc:id="81d27268-8915-44c7-b3ca-99fd85cd972f" config-ref="Calculator_Soap_Service_Connector_Config" action="Subtract"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ed5aa1dc-0717-4577-b357-df33074ab78a" message="#[message]" />
+		<ee:transform doc:name="Transform Message" doc:id="6a99b83e-4bc6-448f-9371-aad3a0f7a11f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statuscode: message.attributes.statusCode,
+	reason: message.attributes.reasonPhrase,
+	result: payload.Envelope.Body.SubtractResponse.SubtractResult
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
