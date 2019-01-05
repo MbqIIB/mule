@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="09e55981-d1c2-4958-a3de-49c0e9427b74" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="dc639367-ea77-43be-aeaa-b14941170033" >
+		<http:request-connection protocol="HTTPS" host="api.github.com" port="443" >
+			<http:authentication >
+				<http:basic-authentication username="github_user" password="github_user_password"/>
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="01899bc2-6270-4a01-b6a6-150e7c098bcd" >
+		<http:request-connection protocol="HTTPS" host="api.github.com" port="443">
+			<http:authentication >
+				<oauth:authorization-code-grant-type localCallbackUrl="http://localhost:8082/callback" localAuthorizationUrl="http://localhost:8082/login" authorizationUrl="https://github.com/login/oauth/authorize" clientId="client_id" clientSecret="client_secret" tokenUrl="https://github.com/login/oauth/access_token" responseRefreshToken="#[payload.access_token]" externalCallbackUrl="http://localhost:8082/callback"/>
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration2" doc:name="HTTP Request configuration" doc:id="52e944f7-e7bf-46bf-8c60-94715cbd907a" basePath="/gmail/v1/users" >
+		<http:request-connection protocol="HTTPS" host="www.googleapis.com">
+			<http:authentication >
+				<oauth:authorization-code-grant-type externalCallbackUrl="http://localhost:8090/callback" localAuthorizationUrl="http://localhost:8090/login" authorizationUrl="https://accounts.google.com/o/oauth2/v2/auth" clientId="149610871504-kil3n6vguqvtb82b0f8b5eobs6omprob.apps.googleusercontent.com" clientSecret="AB6Ngo-fDKwRZ-kMOWBeggnY" tokenUrl="https://www.googleapis.com/oauth2/v4/token" />
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration3" doc:name="HTTP Request configuration" doc:id="7fc0b455-db6c-49f2-b346-b284fb837ff7" basePath="/1.1" >
+		<http:request-connection protocol="HTTPS" host="api.twitter.com" >
+			<http:authentication >
+				<oauth:client-credentials-grant-type clientId="client_id" clientSecret="client_secret" tokenUrl="https://api.twitter.com//oauth2/token"/>
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration4" doc:name="HTTP Request configuration" doc:id="c0a29c3d-ccaa-44ca-8437-e11b2ec5948b" basePath="/1.1" >
+		<http:request-connection protocol="HTTPS" host="api.twitter.com" >
+			<http:authentication >
+				<oauth:authorization-code-grant-type externalCallbackUrl="https://localhost:8083/callback" localAuthorizationUrl="https://localhost:8083/login" authorizationUrl="https://api.twitter.com/oauth/authenticate" clientId="8WTr63sufvIyZMssxhH5VEFxY" clientSecret="W4pIz6bwPYPVJ5HGcS2ImZKRu1wbDG9d1sXhNbR6AoRMJQmZnp" tokenUrl="https://api.twitter.com/oauth2/token"/>
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<flow name="authenticate-http-request-basicFlow" doc:id="acb60b69-e739-4b6a-85d1-69834a64f9aa" >
+		<http:listener doc:name="Listener" doc:id="d4868ab0-c753-44ed-8fb2-cd6d335a5a55" config-ref="HTTP_Listener_config" path="/basic"/>
+		<http:request method="GET" doc:name="Request" doc:id="c19c3f05-ef43-43d7-aef9-45e15162c264" config-ref="HTTP_Request_configuration" path="/user"/>
+		<ee:transform doc:name="Transform Message" doc:id="edd987a8-28b4-4496-8857-27841dca4517" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="authenticate-http-request-authcode-githubFlow" doc:id="ad16431c-fd41-415f-aacd-b4aed213f6ac" >
+		<http:listener doc:name="Listener" doc:id="8ec59262-8dfa-4c36-bf40-64f98ac5b66c" config-ref="HTTP_Listener_config" path="/github"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f9e59100-5ede-4dab-a028-21f6a2392242" message="Github user requested."/>
+		<http:request method="GET" doc:name="Request" doc:id="1e45e6d8-8c9d-4341-a3ad-d7d05c3b0202" config-ref="HTTP_Request_configuration1" path="/user"/>
+	</flow>
+	<flow name="authenticate-http-request-client-credential-twitterFlow" doc:id="5520d94c-1632-49b1-b984-43609a580688" >
+		<http:listener doc:name="Listener" doc:id="a78220fb-8331-4470-b528-9900e6509764" config-ref="HTTP_Listener_config" path="/clientcredential_twitter" doc:description="http://localhost:8081/clientcredential_twitter?count=5&amp;q=Mule 4"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d32fcf78-4f93-434a-8d7d-d4c1023ca270" message="Count is #[attributes.queryParams.count] and q is #[attributes.queryParams.q]"/>
+		<http:request method="GET" doc:name="Request" doc:id="401f6e73-5af7-4905-a17c-466e41a93676" config-ref="HTTP_Request_configuration3" path="/search/tweets.json">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"count" : attributes.queryParams.count,
+	"q" : attributes.queryParams.q
+}]]]></http:query-params>
+		</http:request>
+	</flow>
+</mule>
