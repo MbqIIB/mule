@@ -1,0 +1,19 @@
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:notification-example="http://www.mulesoft.org/schema/mule/notification-example"
+      xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+          http://www.mulesoft.org/schema/mule/notification-example http://www.mulesoft.org/schema/mule/notification-example/current/mule-notification-example.xsd">
+
+    <notification-example:config name="config" configId="configId">
+        <notification-example:connection requiredParameter="aValue" />
+    </notification-example:config>
+
+    <flow name="sayHiFlow">
+        <notification-example:say-hi person="Mariano Gonzalez"/>
+    </flow>
+
+    <flow name="retrieveInfoFlow">
+        <notification-example:retrieve-info config-ref="config"/>
+    </flow>
+
+</mule>

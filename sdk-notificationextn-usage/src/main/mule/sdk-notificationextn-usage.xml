@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:notification-example="http://www.mulesoft.org/schema/mule/notification-example" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/notification-example http://www.mulesoft.org/schema/mule/notification-example/current/mule-notification-example.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="1d016075-3325-4754-8a77-abd1d914ab55" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="sdk-notificationextn-usageFlow" doc:id="f28271a2-e6a3-4719-9416-706a48c81e3d" >
+		<http:listener doc:name="Listener" doc:id="0acc0687-a6ea-4142-a673-9942dad02605" config-ref="HTTP_Listener_config" path="/notification"/>
+		<notification-example:say-hi doc:name="Say hi" doc:id="3ec6a472-0735-4a54-bd9a-afd99cbb894e" person="Sanjeev"/>
+	</flow>
+</mule>
