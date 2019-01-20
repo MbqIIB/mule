@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<tls:context name="TLS_Context" doc:name="TLS Context" doc:id="2f9adaeb-bb52-416d-8c14-b8d87bee47cb" >
+		<tls:trust-store path="tls/mytruststore.jks" password="mule123" type="jks"/>
+		<tls:key-store type="jks" path="tls/mykeystore.jks" alias="serverkey" keyPassword="mule123" password="mule123"/>
+	</tls:context>
+	<http:listener-config name="HTTPS_Listener_config" doc:name="HTTP Listener config" doc:id="13601162-ab2f-44ba-9f14-f3f49f598c82" >
+		<http:listener-connection protocol="HTTPS" host="0.0.0.0" port="8443" tlsContext="TLS_Context"/>
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="897782c4-7d01-4871-8676-835037739e4d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTPS_Request_configuration" doc:name="HTTP Request configuration" doc:id="eeb49c11-b510-441e-9252-de163638694a">
+		<http:request-connection protocol="HTTPS" host="localhost" port="8443">
+			<tls:context >
+				<tls:trust-store path="tls/mytruststore.jks" password="mule123" type="jks" />
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<flow name="tls-http-listenerServerFlow" doc:id="0bf8c506-2f5d-4c7c-a150-b3d0c8fdf799" >
+		<http:listener doc:name="Listener" doc:id="e6230b10-a9f9-4f69-a0b9-49574df44f88" config-ref="HTTPS_Listener_config" path="/tls"/>
+		<ee:transform doc:name="Transform Message" doc:id="30f1fca2-0d2a-4bf2-a7dc-d8ea438ba233" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{  
+	message: "This is secure API"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="tls-http-listenerClientFlow" doc:id="94514406-fa75-4c95-9e32-d291d3efa00e" >
+		<http:listener doc:name="Listener" doc:id="c704bb21-9f44-49c1-a1d7-7c584d8e4197" config-ref="HTTP_Listener_config" path="/client"/>
+		<http:request method="GET" doc:name="Request" doc:id="ca05a6d4-718b-44f9-8292-68e531e10c6f" config-ref="HTTPS_Request_configuration" path="/tls"/>
+	</flow>
+</mule>
